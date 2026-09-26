@@ -2,7 +2,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 /* =========================================================
    GARAGE OPERATIONS PRO
-   FULLY CONNECTED / CLICKABLE APP.JS
+   COMPLETE APP.JS
    MATCHED TO CURRENT INDEX.HTML
    ========================================================= */
 
@@ -24,7 +24,7 @@ const sb = createClient(
 
 
 /* =========================================================
-   DOM
+   DOM HELPER
    ========================================================= */
 
 const $ = id =>
@@ -112,7 +112,6 @@ function toast(message) {
   }
 
   box.textContent = message;
-
   box.style.display = "block";
 
   clearTimeout(
@@ -150,6 +149,174 @@ function setUser(username) {
 
 
 /* =========================================================
+   COMPACT PROFESSIONAL DASHBOARD
+   Does not change HTML structure.
+   ========================================================= */
+
+function applyDashboardPolish() {
+
+  if ($("garageCompactStyle")) {
+    return;
+  }
+
+  const style =
+    document.createElement("style");
+
+  style.id =
+    "garageCompactStyle";
+
+  style.textContent = `
+
+    /* -----------------------------------------------------
+       DASHBOARD COMPACT MODE
+       ----------------------------------------------------- */
+
+    #dashboard .summary-grid {
+      gap: 12px !important;
+    }
+
+    #dashboard .summary {
+      min-height: 118px !important;
+      padding: 16px !important;
+    }
+
+    #dashboard .summary strong {
+      font-size: 25px !important;
+    }
+
+    #dashboard .summary em {
+      font-size: 11px !important;
+    }
+
+    #dashboard .dash-grid,
+    #dashboard .dash-grid {
+      gap: 14px !important;
+    }
+
+    #dashboard .panel {
+      padding: 16px !important;
+    }
+
+    #dashboard .panel-title {
+      margin-bottom: 10px !important;
+    }
+
+    #dashboard .panel-title h2 {
+      font-size: 15px !important;
+    }
+
+    #dashboard .panel-title small {
+      font-size: 11px !important;
+    }
+
+    #dashboard .chart-panel,
+    #dashboard .status-panel {
+      min-height: 230px !important;
+    }
+
+    #dashboard .activity-row {
+      padding: 9px 4px !important;
+      min-height: 40px !important;
+    }
+
+    #dashboard .quick .qa {
+      padding: 10px 12px !important;
+      margin-bottom: 7px !important;
+    }
+
+    /* clickable visual feedback */
+
+    #dashboard .summary,
+    #dashboard .qa,
+    #dashboard .panel,
+    .vehicle-click,
+    .expense-row {
+      transition:
+        transform .15s ease,
+        box-shadow .15s ease,
+        border-color .15s ease;
+    }
+
+    #dashboard .summary:hover,
+    #dashboard .qa:hover,
+    .vehicle-click:hover,
+    .expense-row:hover {
+      transform: translateY(-1px);
+    }
+
+    /* status buttons */
+
+    .status-select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #d7dde5;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .approved-badge {
+      display:inline-block;
+      padding:5px 9px;
+      border-radius:999px;
+      background:#e8f7ef;
+      color:#13834f;
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .pending-badge {
+      display:inline-block;
+      padding:5px 9px;
+      border-radius:999px;
+      background:#fff4df;
+      color:#b56a00;
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .rejected-badge {
+      display:inline-block;
+      padding:5px 9px;
+      border-radius:999px;
+      background:#fdecec;
+      color:#c52d2d;
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .paid-badge {
+      display:inline-block;
+      padding:5px 9px;
+      border-radius:999px;
+      background:#e9f0ff;
+      color:#315fba;
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .detail-label {
+      display:block;
+      color:#7a8491;
+      font-size:11px;
+      margin-bottom:3px;
+    }
+
+    .detail-value {
+      display:block;
+      font-weight:600;
+      color:#18212b;
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+}
+
+
+/* =========================================================
    LOGIN
    ========================================================= */
 
@@ -180,8 +347,7 @@ if (loginForm) {
 
         if ($("loginMsg")) {
 
-          $("loginMsg")
-            .textContent =
+          $("loginMsg").textContent =
             "Incorrect username or password.";
 
         }
@@ -193,8 +359,8 @@ if (loginForm) {
 
       if ($("loginMsg")) {
 
-        $("loginMsg")
-          .textContent = "";
+        $("loginMsg").textContent =
+          "";
 
       }
 
@@ -260,9 +426,7 @@ if ($("logout")) {
         .remove("hidden");
 
       if ($("password")) {
-
         $("password").value = "";
-
       }
 
       currentUser = "";
@@ -331,41 +495,29 @@ async function loadData() {
     ]);
 
 
-    if (vehicleResult.error) {
-
+    if (vehicleResult.error)
       console.error(
         "Vehicles:",
         vehicleResult.error
       );
 
-    }
-
-    if (expenseResult.error) {
-
+    if (expenseResult.error)
       console.error(
         "Expenses:",
         expenseResult.error
       );
 
-    }
-
-    if (pettyResult.error) {
-
+    if (pettyResult.error)
       console.error(
         "Petty cash:",
         pettyResult.error
       );
 
-    }
-
-    if (requisitionResult.error) {
-
+    if (requisitionResult.error)
       console.error(
         "Requisitions:",
         requisitionResult.error
       );
-
-    }
 
 
     vehicles =
@@ -406,13 +558,9 @@ async function loadData() {
 function renderAll() {
 
   renderDashboard();
-
   renderVehicles();
-
   renderExpenses();
-
   renderPettyCash();
-
   renderRequisitions();
 
 }
@@ -460,47 +608,26 @@ function showPage(pageName) {
     });
 
 
-  if (pageName === "dashboard") {
-
+  if (pageName === "dashboard")
     renderDashboard();
 
-  }
-
-  if (pageName === "vehicles") {
-
+  if (pageName === "vehicles")
     renderVehicles();
 
-  }
-
-  if (pageName === "expenses") {
-
+  if (pageName === "expenses")
     renderExpenses();
 
-  }
-
-  if (pageName === "petty") {
-
+  if (pageName === "petty")
     renderPettyCash();
 
-  }
-
-  if (pageName === "requisitions") {
-
+  if (pageName === "requisitions")
     renderRequisitions();
-
-  }
-
-  if (pageName === "reports") {
-
-    renderDashboard();
-
-  }
 
 }
 
 
 /* =========================================================
-   NAVIGATION BUTTONS
+   NAVIGATION
    ========================================================= */
 
 document
@@ -533,9 +660,7 @@ function renderDashboard() {
     expenses.reduce(
       (sum, item) =>
         sum +
-        Number(
-          item.amount || 0
-        ),
+        Number(item.amount || 0),
       0
     );
 
@@ -544,9 +669,7 @@ function renderDashboard() {
     petty.reduce(
       (sum, item) =>
         sum +
-        Number(
-          item.amount || 0
-        ),
+        Number(item.amount || 0),
       0
     );
 
@@ -572,10 +695,8 @@ function renderDashboard() {
   const active =
     vehicles.filter(
       item =>
-        item.status ===
-          "Completed" ||
-        item.status ===
-          "Released"
+        item.status === "Completed" ||
+        item.status === "Released"
     ).length;
 
 
@@ -588,68 +709,48 @@ function renderDashboard() {
 
 
   if ($("dashVehicles"))
-    $("dashVehicles")
-      .textContent =
+    $("dashVehicles").textContent =
       vehicles.length;
 
-
   if ($("dashActive"))
-    $("dashActive")
-      .textContent =
+    $("dashActive").textContent =
       active;
 
-
   if ($("dashRepair"))
-    $("dashRepair")
-      .textContent =
+    $("dashRepair").textContent =
       repair;
 
-
   if ($("dashExpenses"))
-    $("dashExpenses")
-      .textContent =
+    $("dashExpenses").textContent =
       money(totalExpenses);
 
-
   if ($("dashPetty"))
-    $("dashPetty")
-      .textContent =
+    $("dashPetty").textContent =
       money(totalPetty);
 
-
   if ($("dashReq"))
-    $("dashReq")
-      .textContent =
+    $("dashReq").textContent =
       pendingRequests;
 
 
   if ($("reportExpenses"))
-    $("reportExpenses")
-      .textContent =
+    $("reportExpenses").textContent =
       money(totalExpenses);
 
-
   if ($("reportFleet"))
-    $("reportFleet")
-      .textContent =
+    $("reportFleet").textContent =
       vehicles.length;
 
-
   if ($("reportPetty"))
-    $("reportPetty")
-      .textContent =
+    $("reportPetty").textContent =
       money(totalPetty);
 
-
   if ($("reportReq"))
-    $("reportReq")
-      .textContent =
+    $("reportReq").textContent =
       pendingRequests;
 
-
   if ($("pettyPage"))
-    $("pettyPage")
-      .textContent =
+    $("pettyPage").textContent =
       money(totalPetty);
 
 
@@ -679,9 +780,8 @@ function renderDonut(
   const donut =
     $("donut");
 
-  if (!donut) {
+  if (!donut)
     return;
-  }
 
 
   const total =
@@ -698,14 +798,10 @@ function renderDonut(
   } else {
 
     const activePercent =
-      active /
-      total *
-      100;
+      active / total * 100;
 
     const repairPercent =
-      repair /
-      total *
-      100;
+      repair / total * 100;
 
 
     donut.style.background =
@@ -719,26 +815,19 @@ function renderDonut(
 
 
   if ($("donutTotal"))
-    $("donutTotal")
-      .textContent =
+    $("donutTotal").textContent =
       vehicles.length;
 
-
   if ($("activeLegend"))
-    $("activeLegend")
-      .textContent =
+    $("activeLegend").textContent =
       active;
 
-
   if ($("repairLegend"))
-    $("repairLegend")
-      .textContent =
+    $("repairLegend").textContent =
       repair;
 
-
   if ($("outLegend"))
-    $("outLegend")
-      .textContent =
+    $("outLegend").textContent =
       out;
 
 }
@@ -753,30 +842,19 @@ function renderExpenseChart() {
   const chart =
     $("expenseChart");
 
-  if (!chart) {
+  if (!chart)
     return;
-  }
 
 
   const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec"
+    "Jan","Feb","Mar","Apr",
+    "May","Jun","Jul","Aug",
+    "Sep","Oct","Nov","Dec"
   ];
 
 
   const year =
-    new Date()
-      .getFullYear();
+    new Date().getFullYear();
 
 
   const values =
@@ -793,19 +871,15 @@ function renderExpenseChart() {
               );
 
             return (
-              date.getFullYear() ===
-              year &&
-              date.getMonth() ===
-              index
+              date.getFullYear() === year &&
+              date.getMonth() === index
             );
 
           })
           .reduce(
             (sum, item) =>
               sum +
-              Number(
-                item.amount || 0
-              ),
+              Number(item.amount || 0),
             0
           );
 
@@ -814,10 +888,7 @@ function renderExpenseChart() {
 
 
   const max =
-    Math.max(
-      ...values,
-      1
-    );
+    Math.max(...values, 1);
 
 
   chart.innerHTML =
@@ -828,18 +899,19 @@ function renderExpenseChart() {
           const height =
             Math.max(
               5,
-              value /
-              max *
-              100
+              value / max * 100
             );
 
 
           return `
             <div
               class="bar-wrap"
-              style="height:100%;cursor:pointer;"
               data-month="${index}"
-              title="${money(value)}"
+              style="
+                height:100%;
+                cursor:pointer;
+              "
+              title="${months[index]} — ${money(value)}"
             >
 
               <div
@@ -867,9 +939,7 @@ function renderExpenseChart() {
         "click",
         () => {
 
-          showPage(
-            "expenses"
-          );
+          showPage("expenses");
 
         }
       );
@@ -888,9 +958,8 @@ function renderActivity() {
   const box =
     $("activityList");
 
-  if (!box) {
+  if (!box)
     return;
-  }
 
 
   const activities = [];
@@ -903,13 +972,10 @@ function renderActivity() {
       activities.push({
 
         type: "expense",
-
         id: item.id,
-
         text:
           item.description ||
           "Expense",
-
         value:
           money(item.amount)
 
@@ -925,13 +991,10 @@ function renderActivity() {
       activities.push({
 
         type: "requisition",
-
         id: item.id,
-
         text:
           item.req_no ||
           "Requisition",
-
         value:
           item.status ||
           "Pending"
@@ -947,6 +1010,7 @@ function renderActivity() {
       "<p>No recent activity.</p>";
 
     return;
+
   }
 
 
@@ -958,8 +1022,8 @@ function renderActivity() {
 
           <div
             class="activity-row"
-            data-type="${item.type}"
-            data-id="${item.id}"
+            data-type="${esc(item.type)}"
+            data-id="${esc(item.id)}"
             style="cursor:pointer"
           >
 
@@ -1012,9 +1076,8 @@ function renderVehicles() {
   const list =
     $("list");
 
-  if (!list) {
+  if (!list)
     return;
-  }
 
 
   const search =
@@ -1039,16 +1102,13 @@ function renderVehicles() {
           String(
             vehicle.registration ||
             ""
-          )
-            .toLowerCase();
-
+          ).toLowerCase();
 
         const customer =
           String(
             vehicle.customer ||
             ""
-          )
-            .toLowerCase();
+          ).toLowerCase();
 
 
         return (
@@ -1059,8 +1119,7 @@ function renderVehicles() {
           ) &&
           (
             !filter ||
-            vehicle.status ===
-            filter
+            vehicle.status === filter
           )
         );
 
@@ -1082,24 +1141,20 @@ function renderVehicles() {
     `;
 
     return;
+
   }
 
 
   list.innerHTML =
     filtered
-      .map(
-        vehicle =>
-          vehicleCard(
-            vehicle
-          )
+      .map(vehicle =>
+        vehicleCard(vehicle)
       )
       .join("");
 
 
   list
-    .querySelectorAll(
-      ".vehicle-click"
-    )
+    .querySelectorAll(".vehicle-click")
     .forEach(card => {
 
       card.addEventListener(
@@ -1107,9 +1162,7 @@ function renderVehicles() {
         event => {
 
           if (
-            event.target.closest(
-              "button"
-            )
+            event.target.closest("button")
           ) {
             return;
           }
@@ -1125,9 +1178,9 @@ function renderVehicles() {
 
 
   /*
-   * If the search identifies a
-   * specific vehicle, show its
-   * expenses directly underneath.
+   * Search such as KBN:
+   * display matching vehicle and
+   * its expenses directly below.
    */
 
   if (search) {
@@ -1146,16 +1199,32 @@ function renderVehicles() {
 
     if (matchedVehicle) {
 
-      const expensesHTML =
-        vehicleExpensesHTML(
-          matchedVehicle
-        );
-
-
       list.insertAdjacentHTML(
         "beforeend",
-        expensesHTML
+        vehicleExpensesHTML(
+          matchedVehicle
+        )
       );
+
+
+      list
+        .querySelectorAll(
+          "[data-searched-expense]"
+        )
+        .forEach(row => {
+
+          row.addEventListener(
+            "click",
+            () => {
+
+              openExpenseDetails(
+                row.dataset.searchedExpense
+              );
+
+            }
+          );
+
+        });
 
     }
 
@@ -1168,9 +1237,7 @@ function renderVehicles() {
    VEHICLE CARD
    ========================================================= */
 
-function vehicleCard(
-  vehicle
-) {
+function vehicleCard(vehicle) {
 
   const vehicleExpenses =
     getVehicleExpenses(
@@ -1182,24 +1249,16 @@ function vehicleCard(
     vehicleExpenses.reduce(
       (sum, item) =>
         sum +
-        Number(
-          item.amount || 0
-        ),
+        Number(item.amount || 0),
       0
     );
 
 
   const billed =
-    Number(
-      vehicle.billed || 0
-    );
-
+    Number(vehicle.billed || 0);
 
   const paid =
-    Number(
-      vehicle.paid || 0
-    );
-
+    Number(vehicle.paid || 0);
 
   const outstanding =
     Math.max(
@@ -1226,17 +1285,13 @@ function vehicleCard(
           </h3>
 
           <span class="muted">
-
             ${esc(
               vehicle.customer
             )}
-
             •
-
             ${esc(
               vehicle.date_in || ""
             )}
-
           </span>
 
         </div>
@@ -1251,74 +1306,41 @@ function vehicleCard(
 
 
       <p class="muted">
-
         ${esc(
           vehicle.description ||
           "No description"
         )}
-
       </p>
 
 
       <div class="grid">
 
         <div>
-
-          <small>
-            Expenses
-          </small>
-
+          <small>Expenses</small>
           <b>
-            ${money(
-              expenseTotal
-            )}
+            ${money(expenseTotal)}
           </b>
-
         </div>
 
-
         <div>
-
-          <small>
-            Charge-out
-          </small>
-
+          <small>Charge-out</small>
           <b>
-            ${money(
-              billed
-            )}
+            ${money(billed)}
           </b>
-
         </div>
 
-
         <div>
-
-          <small>
-            Paid
-          </small>
-
+          <small>Paid</small>
           <b>
-            ${money(
-              paid
-            )}
+            ${money(paid)}
           </b>
-
         </div>
 
-
         <div>
-
-          <small>
-            Outstanding
-          </small>
-
+          <small>Outstanding</small>
           <b>
-            ${money(
-              outstanding
-            )}
+            ${money(outstanding)}
           </b>
-
         </div>
 
       </div>
@@ -1336,7 +1358,6 @@ function vehicleCard(
           + Expense
         </button>
 
-
         <button
           class="secondary"
           onclick="
@@ -1347,7 +1368,6 @@ function vehicleCard(
         >
           Edit
         </button>
-
 
         <button
           class="secondary"
@@ -1369,12 +1389,10 @@ function vehicleCard(
 
 
 /* =========================================================
-   VEHICLE EXPENSES AFTER SEARCH
+   VEHICLE EXPENSES
    ========================================================= */
 
-function vehicleExpensesHTML(
-  vehicle
-) {
+function vehicleExpensesHTML(vehicle) {
 
   const list =
     getVehicleExpenses(
@@ -1382,45 +1400,39 @@ function vehicleExpensesHTML(
     );
 
 
+  const total =
+    list.reduce(
+      (sum, item) =>
+        sum +
+        Number(item.amount || 0),
+      0
+    );
+
+
   return `
     <section
       class="panel"
-      style="
-        margin-top:18px;
-        cursor:pointer;
-      "
+      style="margin-top:16px"
     >
 
-      <div
-        class="panel-title"
-      >
+      <div class="panel-title">
 
         <div>
 
           <h2>
-            ${esc(
-              vehicle.registration
-            )}
-            — Expenses
+            ${esc(vehicle.registration)}
+            — Related Expenses
           </h2>
 
           <small>
-            Expenses linked to this vehicle
+            ${list.length}
+            expense record${list.length === 1 ? "" : "s"}
           </small>
 
         </div>
 
         <strong>
-          ${money(
-            list.reduce(
-              (sum, item) =>
-                sum +
-                Number(
-                  item.amount || 0
-                ),
-              0
-            )
-          )}
+          ${money(total)}
         </strong>
 
       </div>
@@ -1430,11 +1442,10 @@ function vehicleExpensesHTML(
         list.length
           ? list
               .map(
-                expense =>
-                  `
+                expense => `
                   <div
-                    class="expense-row clickable-record"
-                    data-expense-id="${esc(expense.id)}"
+                    class="expense-row"
+                    data-searched-expense="${esc(expense.id)}"
                     style="cursor:pointer"
                   >
 
@@ -1448,19 +1459,15 @@ function vehicleExpensesHTML(
                       </b>
 
                       <small class="muted">
-
                         ${esc(
                           expense.expense_date ||
                           ""
                         )}
-
                         •
-
                         ${esc(
                           expense.category ||
                           ""
                         )}
-
                       </small>
 
                     </span>
@@ -1472,17 +1479,12 @@ function vehicleExpensesHTML(
                     </b>
 
                   </div>
-                  `
+                `
               )
               .join("")
           : `
-              <p
-                style="
-                  padding:15px;
-                "
-              >
-                No expenses recorded
-                for this vehicle.
+              <p style="padding:10px">
+                No expenses recorded for this vehicle.
               </p>
             `
       }
@@ -1497,15 +1499,11 @@ function vehicleExpensesHTML(
    GET VEHICLE EXPENSES
    ========================================================= */
 
-function getVehicleExpenses(
-  vehicleId
-) {
+function getVehicleExpenses(vehicleId) {
 
   return expenses.filter(
     expense =>
-      String(
-        expense.vehicle_id
-      ) ===
+      String(expense.vehicle_id) ===
       String(vehicleId)
   );
 
@@ -1518,20 +1516,22 @@ function getVehicleExpenses(
 
 if ($("search")) {
 
-  $("search").addEventListener(
-    "input",
-    renderVehicles
-  );
+  $("search")
+    .addEventListener(
+      "input",
+      renderVehicles
+    );
 
 }
 
 
 if ($("filter")) {
 
-  $("filter").addEventListener(
-    "change",
-    renderVehicles
-  );
+  $("filter")
+    .addEventListener(
+      "change",
+      renderVehicles
+    );
 
 }
 
@@ -1540,9 +1540,7 @@ if ($("filter")) {
    VEHICLE DETAILS
    ========================================================= */
 
-function openVehicleDetails(
-  vehicleId
-) {
+function openVehicleDetails(vehicleId) {
 
   const vehicle =
     vehicles.find(
@@ -1552,9 +1550,8 @@ function openVehicleDetails(
     );
 
 
-  if (!vehicle) {
+  if (!vehicle)
     return;
-  }
 
 
   const vehicleExpenses =
@@ -1567,24 +1564,16 @@ function openVehicleDetails(
     vehicleExpenses.reduce(
       (sum, item) =>
         sum +
-        Number(
-          item.amount || 0
-        ),
+        Number(item.amount || 0),
       0
     );
 
 
   const billed =
-    Number(
-      vehicle.billed || 0
-    );
-
+    Number(vehicle.billed || 0);
 
   const paid =
-    Number(
-      vehicle.paid || 0
-    );
-
+    Number(vehicle.paid || 0);
 
   const outstanding =
     Math.max(
@@ -1593,205 +1582,214 @@ function openVehicleDetails(
     );
 
 
-  showDetailsModal(
-    `
-      <div class="head">
+  showDetailsModal(`
+    <div class="head">
 
-        <h2>
+      <h2>
+        ${esc(vehicle.registration)}
+      </h2>
+
+      <button
+        class="x"
+        data-detail-close
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div style="
+      display:grid;
+      gap:14px;
+    ">
+
+      <div>
+        <span class="detail-label">
+          Customer
+        </span>
+
+        <strong class="detail-value">
+          ${esc(vehicle.customer)}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Status
+        </span>
+
+        <strong class="detail-value">
+          ${esc(vehicle.status)}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Date received
+        </span>
+
+        <strong class="detail-value">
+          ${esc(vehicle.date_in || "")}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Job type
+        </span>
+
+        <strong class="detail-value">
+          ${esc(vehicle.job_type || "")}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Charge-out
+        </span>
+
+        <strong class="detail-value">
+          ${money(billed)}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Payment received
+        </span>
+
+        <strong class="detail-value">
+          ${money(paid)}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Outstanding
+        </span>
+
+        <strong class="detail-value">
+          ${money(outstanding)}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Total expenses
+        </span>
+
+        <strong class="detail-value">
+          ${money(expenseTotal)}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Description
+        </span>
+
+        <p>
           ${esc(
-            vehicle.registration
+            vehicle.description ||
+            "No description"
           )}
-        </h2>
+        </p>
+      </div>
+
+
+      <hr>
+
+
+      <h3>
+        Vehicle Expenses
+      </h3>
+
+
+      ${
+        vehicleExpenses.length
+          ? vehicleExpenses
+              .map(
+                expense => `
+                  <div
+                    class="expense-row"
+                    data-detail-expense="${esc(expense.id)}"
+                    style="cursor:pointer"
+                  >
+
+                    <span>
+
+                      <b>
+                        ${esc(
+                          expense.description ||
+                          "Expense"
+                        )}
+                      </b>
+
+                      <small>
+                        ${esc(
+                          expense.category ||
+                          ""
+                        )}
+                        •
+                        ${esc(
+                          expense.expense_date ||
+                          ""
+                        )}
+                      </small>
+
+                    </span>
+
+                    <b>
+                      ${money(
+                        expense.amount
+                      )}
+                    </b>
+
+                  </div>
+                `
+              )
+              .join("")
+          : `
+              <p>No expenses recorded.</p>
+            `
+      }
+
+
+      <div class="actions">
 
         <button
-          class="x"
-          data-detail-close
+          data-detail-add-expense="${esc(vehicle.id)}"
         >
-          ×
+          + Add Expense
+        </button>
+
+        <button
+          class="secondary"
+          data-detail-edit-vehicle="${esc(vehicle.id)}"
+        >
+          Edit Vehicle
         </button>
 
       </div>
 
-
-      <div
-        style="
-          display:grid;
-          gap:12px;
-        "
-      >
-
-        <div>
-          <small>Customer</small>
-          <strong>
-            ${esc(
-              vehicle.customer
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Status</small>
-          <strong>
-            ${esc(
-              vehicle.status
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Date received</small>
-          <strong>
-            ${esc(
-              vehicle.date_in ||
-              ""
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Job type</small>
-          <strong>
-            ${esc(
-              vehicle.job_type ||
-              ""
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Charge-out</small>
-          <strong>
-            ${money(billed)}
-          </strong>
-        </div>
-
-        <div>
-          <small>Payment received</small>
-          <strong>
-            ${money(paid)}
-          </strong>
-        </div>
-
-        <div>
-          <small>Outstanding</small>
-          <strong>
-            ${money(outstanding)}
-          </strong>
-        </div>
-
-        <div>
-          <small>Total expenses</small>
-          <strong>
-            ${money(expenseTotal)}
-          </strong>
-        </div>
-
-        <div>
-
-          <small>
-            Description
-          </small>
-
-          <p>
-            ${esc(
-              vehicle.description ||
-              "No description"
-            )}
-          </p>
-
-        </div>
-
-
-        <hr>
-
-
-        <h3>
-          Vehicle Expenses
-        </h3>
-
-
-        ${
-          vehicleExpenses.length
-            ? vehicleExpenses
-                .map(
-                  expense =>
-                    `
-                    <div
-                      class="expense-row"
-                      data-detail-expense="${esc(expense.id)}"
-                      style="cursor:pointer"
-                    >
-
-                      <span>
-
-                        <b>
-                          ${esc(
-                            expense.description ||
-                            "Expense"
-                          )}
-                        </b>
-
-                        <small>
-                          ${esc(
-                            expense.category ||
-                            ""
-                          )}
-                          •
-                          ${esc(
-                            expense.expense_date ||
-                            ""
-                          )}
-                        </small>
-
-                      </span>
-
-                      <b>
-                        ${money(
-                          expense.amount
-                        )}
-                      </b>
-
-                    </div>
-                    `
-                )
-                .join("")
-            : `
-                <p>
-                  No expenses recorded.
-                </p>
-              `
-        }
-
-
-        <div class="actions">
-
-          <button
-            data-detail-add-expense="${esc(vehicle.id)}"
-          >
-            + Add Expense
-          </button>
-
-          <button
-            class="secondary"
-            data-detail-edit-vehicle="${esc(vehicle.id)}"
-          >
-            Edit Vehicle
-          </button>
-
-        </div>
-
-      </div>
-    `
-  );
+    </div>
+  `);
 
 
   const modal =
     $("recordDetailsModal");
 
-
-  if (!modal) {
+  if (!modal)
     return;
-  }
 
 
   modal
@@ -1819,6 +1817,7 @@ function openVehicleDetails(
       "[data-detail-add-expense]"
     );
 
+
   if (addButton) {
 
     addButton.addEventListener(
@@ -1841,6 +1840,7 @@ function openVehicleDetails(
     modal.querySelector(
       "[data-detail-edit-vehicle]"
     );
+
 
   if (editButton) {
 
@@ -1866,14 +1866,11 @@ function openVehicleDetails(
    VEHICLE MODAL
    ========================================================= */
 
-function openVehicleModal(
-  vehicle = null
-) {
+function openVehicleModal(vehicle = null) {
 
   if ($("vTitle")) {
 
-    $("vTitle")
-      .textContent =
+    $("vTitle").textContent =
       vehicle
         ? "Edit Vehicle"
         : "Add Vehicle";
@@ -1884,39 +1881,31 @@ function openVehicleModal(
   $("vid").value =
     vehicle?.id || "";
 
-
   $("reg").value =
     vehicle?.registration || "";
 
-
   $("customer").value =
     vehicle?.customer || "";
-
 
   $("date_in").value =
     vehicle?.date_in ||
     todayISO();
 
-
   $("job_type").value =
     vehicle?.job_type ||
     "Repair";
-
 
   $("status").value =
     vehicle?.status ||
     "Under Repair";
 
-
   $("description").value =
     vehicle?.description ||
     "";
 
-
   $("billed").value =
     vehicle?.billed ||
     0;
-
 
   $("paid").value =
     vehicle?.paid ||
@@ -1932,14 +1921,15 @@ function openVehicleModal(
 
 if ($("addVehicle")) {
 
-  $("addVehicle").addEventListener(
-    "click",
-    () => {
+  $("addVehicle")
+    .addEventListener(
+      "click",
+      () => {
 
-      openVehicleModal();
+        openVehicleModal();
 
-    }
-  );
+      }
+    );
 
 }
 
@@ -1991,14 +1981,12 @@ if ($("vehicleForm")) {
 
           billed:
             Number(
-              $("billed")
-                .value || 0
+              $("billed").value || 0
             ),
 
           paid:
             Number(
-              $("paid")
-                .value || 0
+              $("paid").value || 0
             )
 
         };
@@ -2013,10 +2001,7 @@ if ($("vehicleForm")) {
             await sb
               .from("vehicles")
               .update(data)
-              .eq(
-                "id",
-                id
-              );
+              .eq("id", id);
 
         } else {
 
@@ -2040,6 +2025,7 @@ if ($("vehicleForm")) {
           );
 
           return;
+
         }
 
 
@@ -2078,13 +2064,8 @@ window.editVehicle =
       );
 
 
-    if (vehicle) {
-
-      openVehicleModal(
-        vehicle
-      );
-
-    }
+    if (vehicle)
+      openVehicleModal(vehicle);
 
   };
 
@@ -2104,9 +2085,8 @@ window.deleteVehicle =
       );
 
 
-    if (!vehicle) {
+    if (!vehicle)
       return;
-    }
 
 
     if (
@@ -2122,10 +2102,7 @@ window.deleteVehicle =
       await sb
         .from("vehicles")
         .delete()
-        .eq(
-          "id",
-          id
-        );
+        .eq("id", id);
 
 
     if (result.error) {
@@ -2148,7 +2125,7 @@ window.deleteVehicle =
 
 
 /* =========================================================
-   EXPENSE FORM
+   ADD VEHICLE EXPENSE
    ========================================================= */
 
 window.addVehicleExpense =
@@ -2157,14 +2134,11 @@ window.addVehicleExpense =
     $("evid").value =
       vehicleId;
 
-
     $("edate").value =
       todayISO();
 
-
     $("edesc").value =
       "";
-
 
     $("eamount").value =
       "";
@@ -2187,28 +2161,21 @@ function renderExpenses() {
     expenses.reduce(
       (sum, item) =>
         sum +
-        Number(
-          item.amount || 0
-        ),
+        Number(item.amount || 0),
       0
     );
 
 
-  if ($("expenseTotalPage")) {
-
-    $("expenseTotalPage")
-      .textContent =
+  if ($("expenseTotalPage"))
+    $("expenseTotalPage").textContent =
       money(total);
-
-  }
 
 
   const table =
     $("expenseTable");
 
-  if (!table) {
+  if (!table)
     return;
-  }
 
 
   if (!expenses.length) {
@@ -2231,19 +2198,14 @@ function renderExpenses() {
 
   table.innerHTML =
     expenses
-      .map(
-        expense =>
-          expenseRow(
-            expense
-          )
+      .map(expense =>
+        expenseRow(expense)
       )
       .join("");
 
 
   table
-    .querySelectorAll(
-      "[data-expense-id]"
-    )
+    .querySelectorAll("[data-expense-id]")
     .forEach(row => {
 
       row.addEventListener(
@@ -2266,17 +2228,13 @@ function renderExpenses() {
    EXPENSE ROW
    ========================================================= */
 
-function expenseRow(
-  expense
-) {
+function expenseRow(expense) {
 
   const vehicle =
     vehicles.find(
       v =>
         String(v.id) ===
-        String(
-          expense.vehicle_id
-        )
+        String(expense.vehicle_id)
     );
 
 
@@ -2324,9 +2282,7 @@ function expenseRow(
       </span>
 
       <b>
-        ${money(
-          expense.amount
-        )}
+        ${money(expense.amount)}
       </b>
 
     </div>
@@ -2339,9 +2295,7 @@ function expenseRow(
    EXPENSE DETAILS
    ========================================================= */
 
-function openExpenseDetails(
-  expenseId
-) {
+function openExpenseDetails(expenseId) {
 
   const expense =
     expenses.find(
@@ -2351,129 +2305,133 @@ function openExpenseDetails(
     );
 
 
-  if (!expense) {
+  if (!expense)
     return;
-  }
 
 
   const vehicle =
     vehicles.find(
       v =>
         String(v.id) ===
-        String(
-          expense.vehicle_id
-        )
+        String(expense.vehicle_id)
     );
 
 
-  showDetailsModal(
-    `
-      <div class="head">
+  showDetailsModal(`
+    <div class="head">
 
-        <h2>
-          Expense Details
-        </h2>
+      <h2>
+        Expense Details
+      </h2>
 
-        <button
-          class="x"
-          data-detail-close
-        >
-          ×
-        </button>
-
-      </div>
-
-
-      <div
-        style="
-          display:grid;
-          gap:14px;
-        "
+      <button
+        class="x"
+        data-detail-close
       >
+        ×
+      </button>
 
-        <div>
-          <small>Description</small>
-          <strong>
-            ${esc(
-              expense.description ||
-              "Expense"
-            )}
-          </strong>
-        </div>
+    </div>
 
 
-        <div>
-          <small>Amount</small>
-          <strong>
-            ${money(
-              expense.amount
-            )}
-          </strong>
-        </div>
+    <div style="
+      display:grid;
+      gap:14px;
+    ">
+
+      <div>
+        <span class="detail-label">
+          Description
+        </span>
+
+        <strong class="detail-value">
+          ${esc(
+            expense.description ||
+            "Expense"
+          )}
+        </strong>
+      </div>
 
 
-        <div>
-          <small>Category</small>
-          <strong>
-            ${esc(
-              expense.category ||
-              ""
-            )}
-          </strong>
-        </div>
+      <div>
+        <span class="detail-label">
+          Amount
+        </span>
+
+        <strong class="detail-value">
+          ${money(expense.amount)}
+        </strong>
+      </div>
 
 
-        <div>
-          <small>Date</small>
-          <strong>
-            ${esc(
-              expense.expense_date ||
-              ""
-            )}
-          </strong>
-        </div>
+      <div>
+        <span class="detail-label">
+          Category
+        </span>
+
+        <strong class="detail-value">
+          ${esc(
+            expense.category ||
+            ""
+          )}
+        </strong>
+      </div>
 
 
-        <div>
-          <small>Vehicle</small>
+      <div>
+        <span class="detail-label">
+          Date
+        </span>
 
-          ${
-            vehicle
-              ? `
-                <strong
-                  data-expense-vehicle="${esc(vehicle.id)}"
-                  style="cursor:pointer"
-                >
-                  ${esc(
-                    vehicle.registration
-                  )}
-                  —
-                  ${esc(
-                    vehicle.customer
-                  )}
-                </strong>
-              `
-              : `
-                <strong>
-                  Not linked
-                </strong>
-              `
-          }
+        <strong class="detail-value">
+          ${esc(
+            expense.expense_date ||
+            ""
+          )}
+        </strong>
+      </div>
 
-        </div>
+
+      <div>
+
+        <span class="detail-label">
+          Vehicle
+        </span>
+
+        ${
+          vehicle
+            ? `
+              <strong
+                data-expense-vehicle="${esc(vehicle.id)}"
+                style="cursor:pointer"
+              >
+                ${esc(
+                  vehicle.registration
+                )}
+                —
+                ${esc(
+                  vehicle.customer
+                )}
+              </strong>
+            `
+            : `
+              <strong>
+                Not linked
+              </strong>
+            `
+        }
 
       </div>
-    `
-  );
+
+    </div>
+  `);
 
 
   const modal =
     $("recordDetailsModal");
 
-
-  if (!modal) {
+  if (!modal)
     return;
-  }
 
 
   const vehicleLink =
@@ -2529,11 +2487,6 @@ document
           return;
         }
 
-
-        /*
-         * If a vehicle is currently
-         * selected by search, use it.
-         */
 
         const search =
           (
@@ -2601,8 +2554,7 @@ if ($("expenseForm")) {
 
           amount:
             Number(
-              $("eamount")
-                .value || 0
+              $("eamount").value || 0
             )
 
         };
@@ -2626,6 +2578,7 @@ if ($("expenseForm")) {
           );
 
           return;
+
         }
 
 
@@ -2657,28 +2610,21 @@ function renderPettyCash() {
     petty.reduce(
       (sum, item) =>
         sum +
-        Number(
-          item.amount || 0
-        ),
+        Number(item.amount || 0),
       0
     );
 
 
-  if ($("pettyPage")) {
-
-    $("pettyPage")
-      .textContent =
+  if ($("pettyPage"))
+    $("pettyPage").textContent =
       money(total);
-
-  }
 
 
   const table =
     $("pettyTable");
 
-  if (!table) {
+  if (!table)
     return;
-  }
 
 
   if (!petty.length) {
@@ -2691,11 +2637,14 @@ function renderPettyCash() {
           text-align:center;
         "
       >
-        <p>No petty cash transactions.</p>
+        <p>
+          No petty cash transactions.
+        </p>
       </div>
       `;
 
     return;
+
   }
 
 
@@ -2736,9 +2685,7 @@ function renderPettyCash() {
                 ${
                   item.paid_to
                     ? " • " +
-                      esc(
-                        item.paid_to
-                      )
+                      esc(item.paid_to)
                     : ""
                 }
 
@@ -2747,9 +2694,7 @@ function renderPettyCash() {
             </span>
 
             <b>
-              ${money(
-                item.amount
-              )}
+              ${money(item.amount)}
             </b>
 
           </div>
@@ -2782,12 +2727,10 @@ function renderPettyCash() {
 
 
 /* =========================================================
-   PETTY CASH DETAILS
+   PETTY DETAILS
    ========================================================= */
 
-function openPettyDetails(
-  id
-) {
+function openPettyDetails(id) {
 
   const item =
     petty.find(
@@ -2797,104 +2740,103 @@ function openPettyDetails(
     );
 
 
-  if (!item) {
+  if (!item)
     return;
-  }
 
 
-  showDetailsModal(
-    `
-      <div class="head">
+  showDetailsModal(`
+    <div class="head">
 
-        <h2>
-          Petty Cash Transaction
-        </h2>
+      <h2>
+        Petty Cash Transaction
+      </h2>
 
-        <button
-          class="x"
-          data-detail-close
-        >
-          ×
-        </button>
-
-      </div>
-
-
-      <div
-        style="
-          display:grid;
-          gap:14px;
-        "
+      <button
+        class="x"
+        data-detail-close
       >
+        ×
+      </button>
 
-        <div>
-          <small>Description</small>
-          <strong>
-            ${esc(
-              item.description ||
-              ""
-            )}
-          </strong>
-        </div>
+    </div>
 
-        <div>
-          <small>Amount</small>
-          <strong>
-            ${money(
-              item.amount
-            )}
-          </strong>
-        </div>
 
-        <div>
-          <small>Paid to</small>
-          <strong>
-            ${esc(
-              item.paid_to ||
-              ""
-            )}
-          </strong>
-        </div>
+    <div style="
+      display:grid;
+      gap:14px;
+    ">
 
-        <div>
-          <small>Category</small>
-          <strong>
-            ${esc(
-              item.category ||
-              ""
-            )}
-          </strong>
-        </div>
+      <div>
+        <span class="detail-label">
+          Description
+        </span>
 
-        <div>
-          <small>Date</small>
-          <strong>
-            ${esc(
-              item.cash_date ||
-              ""
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Notes</small>
-          <p>
-            ${esc(
-              item.notes ||
-              "No notes"
-            )}
-          </p>
-        </div>
-
+        <strong>
+          ${esc(item.description || "")}
+        </strong>
       </div>
-    `
-  );
+
+      <div>
+        <span class="detail-label">
+          Amount
+        </span>
+
+        <strong>
+          ${money(item.amount)}
+        </strong>
+      </div>
+
+      <div>
+        <span class="detail-label">
+          Paid to
+        </span>
+
+        <strong>
+          ${esc(item.paid_to || "")}
+        </strong>
+      </div>
+
+      <div>
+        <span class="detail-label">
+          Category
+        </span>
+
+        <strong>
+          ${esc(item.category || "")}
+        </strong>
+      </div>
+
+      <div>
+        <span class="detail-label">
+          Date
+        </span>
+
+        <strong>
+          ${esc(item.cash_date || "")}
+        </strong>
+      </div>
+
+      <div>
+        <span class="detail-label">
+          Notes
+        </span>
+
+        <p>
+          ${esc(
+            item.notes ||
+            "No notes"
+          )}
+        </p>
+      </div>
+
+    </div>
+  `);
 
 }
 
 
 /* =========================================================
-   PETTY CASH ADD
+   ADD PETTY CASH
    ========================================================= */
 
 document
@@ -2908,19 +2850,14 @@ document
       async () => {
 
         const description =
-          prompt(
-            "Description:"
-          );
+          prompt("Description:");
 
-        if (!description) {
+        if (!description)
           return;
-        }
 
 
         const paidTo =
-          prompt(
-            "Paid to:"
-          ) || "";
+          prompt("Paid to:") || "";
 
 
         const category =
@@ -2931,9 +2868,7 @@ document
 
         const amount =
           Number(
-            prompt(
-              "Amount:"
-            ) || 0
+            prompt("Amount:") || 0
           );
 
 
@@ -2976,11 +2911,11 @@ document
           );
 
           return;
+
         }
 
 
         await loadData();
-
 
         toast(
           "Petty cash saved."
@@ -3001,9 +2936,8 @@ function renderRequisitions() {
   const table =
     $("reqTable");
 
-  if (!table) {
+  if (!table)
     return;
-  }
 
 
   if (!requisitions.length) {
@@ -3016,82 +2950,27 @@ function renderRequisitions() {
           text-align:center;
         "
       >
-        <p>No requisitions found.</p>
+        <p>
+          No requisitions found.
+        </p>
       </div>
       `;
 
     return;
+
   }
 
 
   table.innerHTML =
     requisitions
-      .map(
-        item => `
-
-          <div
-            class="expense-row"
-            data-req-id="${esc(item.id)}"
-            style="cursor:pointer"
-          >
-
-            <span>
-
-              <b>
-                ${esc(
-                  item.req_no ||
-                  ""
-                )}
-              </b>
-
-              —
-              
-              ${esc(
-                item.item_description ||
-                ""
-              )}
-
-              <small class="muted">
-
-                Qty:
-                ${esc(
-                  item.quantity ||
-                  0
-                )}
-
-                ×
-
-                ${money(
-                  item.unit_cost
-                )}
-
-                • Total:
-                ${money(
-                  item.total_amount
-                )}
-
-              </small>
-
-            </span>
-
-            <b>
-              ${esc(
-                item.status ||
-                "Pending"
-              )}
-            </b>
-
-          </div>
-
-        `
+      .map(item =>
+        requisitionRow(item)
       )
       .join("");
 
 
   table
-    .querySelectorAll(
-      "[data-req-id]"
-    )
+    .querySelectorAll("[data-req-id]")
     .forEach(row => {
 
       row.addEventListener(
@@ -3111,12 +2990,119 @@ function renderRequisitions() {
 
 
 /* =========================================================
-   REQUISITION DETAILS
+   REQUISITION STATUS BADGE
    ========================================================= */
 
-function openRequisitionDetails(
-  id
-) {
+function statusBadge(status) {
+
+  const value =
+    String(
+      status ||
+      "Pending"
+    );
+
+
+  const lower =
+    value.toLowerCase();
+
+
+  if (lower === "approved")
+    return `
+      <span class="approved-badge">
+        Approved
+      </span>
+    `;
+
+
+  if (lower === "rejected")
+    return `
+      <span class="rejected-badge">
+        Rejected
+      </span>
+    `;
+
+
+  if (lower === "paid")
+    return `
+      <span class="paid-badge">
+        Paid
+      </span>
+    `;
+
+
+  return `
+    <span class="pending-badge">
+      Pending
+    </span>
+  `;
+
+}
+
+
+/* =========================================================
+   REQUISITION ROW
+   ========================================================= */
+
+function requisitionRow(item) {
+
+  return `
+    <div
+      class="expense-row"
+      data-req-id="${esc(item.id)}"
+      style="cursor:pointer"
+    >
+
+      <span>
+
+        <b>
+          ${esc(
+            item.req_no ||
+            ""
+          )}
+        </b>
+
+        —
+
+        ${esc(
+          item.item_description ||
+          ""
+        )}
+
+        <small class="muted">
+
+          ${esc(
+            item.req_date ||
+            ""
+          )}
+
+          • Qty:
+          ${esc(
+            item.quantity || 0
+          )}
+
+          ×
+          ${money(item.unit_cost)}
+
+          • Total:
+          ${money(item.total_amount)}
+
+        </small>
+
+      </span>
+
+      ${statusBadge(item.status)}
+
+    </div>
+  `;
+
+}
+
+
+/* =========================================================
+   REQUISITION DETAILS + APPROVAL
+   ========================================================= */
+
+function openRequisitionDetails(id) {
 
   const item =
     requisitions.find(
@@ -3126,887 +3112,28 @@ function openRequisitionDetails(
     );
 
 
-  if (!item) {
+  if (!item)
     return;
-  }
 
 
-  showDetailsModal(
-    `
-      <div class="head">
-
-        <h2>
-          ${esc(
-            item.req_no ||
-            "Requisition"
-          )}
-        </h2>
-
-        <button
-          class="x"
-          data-detail-close
-        >
-          ×
-        </button>
-
-      </div>
-
-
-      <div
-        style="
-          display:grid;
-          gap:14px;
-        "
-      >
-
-        <div>
-          <small>Requested by</small>
-          <strong>
-            ${esc(
-              item.requested_by ||
-              ""
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Date</small>
-          <strong>
-            ${esc(
-              item.req_date ||
-              ""
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Item</small>
-          <strong>
-            ${esc(
-              item.item_description ||
-              ""
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Quantity</small>
-          <strong>
-            ${esc(
-              item.quantity ||
-              0
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Unit cost</small>
-          <strong>
-            ${money(
-              item.unit_cost
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Total</small>
-          <strong>
-            ${money(
-              item.total_amount
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Status</small>
-          <strong>
-            ${esc(
-              item.status ||
-              "Pending"
-            )}
-          </strong>
-        </div>
-
-        <div>
-          <small>Notes</small>
-          <p>
-            ${esc(
-              item.notes ||
-              "No notes"
-            )}
-          </p>
-        </div>
-
-      </div>
-    `
-  );
-
-}
-
-
-/* =========================================================
-   NEW REQUISITION
-   ========================================================= */
-
-document
-  .querySelectorAll(
-    "#requisitions .page-heading button"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      async () => {
-
-        const nextNumber =
-          requisitions.length + 1;
-
-
-        const reqNo =
-          prompt(
-            "Requisition number:",
-            "REQ-" +
-            String(
-              nextNumber
-            ).padStart(
-              3,
-              "0"
-            )
-          );
-
-
-        if (!reqNo) {
-          return;
-        }
-
-
-        const description =
-          prompt(
-            "Item / material required:"
-          );
-
-
-        if (!description) {
-          return;
-        }
-
-
-        const quantity =
-          Number(
-            prompt(
-              "Quantity:",
-              "1"
-            ) || 0
-          );
-
-
-        const unitCost =
-          Number(
-            prompt(
-              "Unit cost:",
-              "0"
-            ) || 0
-          );
-
-
-        if (
-          quantity <= 0 ||
-          unitCost < 0
-        ) {
-
-          toast(
-            "Enter valid values."
-          );
-
-          return;
-        }
-
-
-        const result =
-          await sb
-            .from("requisitions")
-            .insert({
-
-              req_no,
-
-              req_date:
-                todayISO(),
-
-              requested_by:
-                currentUser,
-
-              item_description:
-                description,
-
-              quantity,
-
-              unit_cost:
-                unitCost,
-
-              total_amount:
-                quantity *
-                unitCost,
-
-              status:
-                "Pending",
-
-              notes: ""
-
-            });
-
-
-        if (result.error) {
-
-          toast(
-            result.error.message
-          );
-
-          return;
-        }
-
-
-        await loadData();
-
-
-        toast(
-          "Requisition created."
-        );
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   GLOBAL SEARCH
-   ========================================================= */
-
-if ($("globalSearch")) {
-
-  $("globalSearch")
-    .addEventListener(
-      "input",
-      event => {
-
-        const value =
-          event.target.value
-            .trim()
-            .toLowerCase();
-
-
-        if (!value) {
-
-          return;
-        }
-
-
-        /*
-         * VEHICLE SEARCH
-         */
-
-        const vehicle =
-          vehicles.find(
-            item => {
-
-              const reg =
-                String(
-                  item.registration ||
-                  ""
-                )
-                  .toLowerCase();
-
-              const customer =
-                String(
-                  item.customer ||
-                  ""
-                )
-                  .toLowerCase();
-
-              return (
-                reg.includes(value) ||
-                customer.includes(value)
-              );
-
-            }
-          );
-
-
-        if (vehicle) {
-
-          showPage(
-            "vehicles"
-          );
-
-          if ($("search")) {
-
-            $("search").value =
-              value;
-
-          }
-
-          renderVehicles();
-
-          return;
-
-        }
-
-
-        /*
-         * EXPENSE SEARCH
-         */
-
-        const expense =
-          expenses.find(
-            item => {
-
-              const description =
-                String(
-                  item.description ||
-                  ""
-                )
-                  .toLowerCase();
-
-              const category =
-                String(
-                  item.category ||
-                  ""
-                )
-                  .toLowerCase();
-
-              return (
-                description.includes(
-                  value
-                ) ||
-                category.includes(
-                  value
-                )
-              );
-
-            }
-          );
-
-
-        if (expense) {
-
-          showPage(
-            "expenses"
-          );
-
-          openExpenseDetails(
-            expense.id
-          );
-
-          return;
-
-        }
-
-
-        /*
-         * REQUISITION SEARCH
-         */
-
-        const req =
-          requisitions.find(
-            item =>
-              String(
-                item.req_no ||
-                ""
-              )
-                .toLowerCase()
-                .includes(value) ||
-              String(
-                item.item_description ||
-                ""
-              )
-                .toLowerCase()
-                .includes(value)
-          );
-
-
-        if (req) {
-
-          showPage(
-            "requisitions"
-          );
-
-          openRequisitionDetails(
-            req.id
-          );
-
-          return;
-
-        }
-
-
-        /*
-         * PETTY CASH SEARCH
-         */
-
-        const cash =
-          petty.find(
-            item =>
-              String(
-                item.description ||
-                ""
-              )
-                .toLowerCase()
-                .includes(value) ||
-              String(
-                item.paid_to ||
-                ""
-              )
-                .toLowerCase()
-                .includes(value)
-          );
-
-
-        if (cash) {
-
-          showPage(
-            "petty"
-          );
-
-          openPettyDetails(
-            cash.id
-          );
-
-        }
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-   QUICK ACTIONS
-   ========================================================= */
-
-document
-  .querySelectorAll(
-    ".quick .qa"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        const page =
-          button.dataset.page;
-
-
-        if (!page) {
-          return;
-        }
-
-
-        showPage(page);
-
-
-        const text =
-          button.textContent
-            .toLowerCase();
-
-
-        if (
-          page === "vehicles" &&
-          text.includes("add")
-        ) {
-
-          openVehicleModal();
-
-        }
-
-
-        if (
-          page === "expenses" &&
-          text.includes("expense")
-        ) {
-
-          if (vehicles.length) {
-
-            window.addVehicleExpense(
-              vehicles[0].id
-            );
-
-          } else {
-
-            toast(
-              "Add a vehicle first."
-            );
-
-          }
-
-        }
-
-
-        if (
-          page === "requisitions"
-        ) {
-
-          const button =
-            document.querySelector(
-              "#requisitions .page-heading button"
-            );
-
-          if (button) {
-
-            button.click();
-
-          }
-
-        }
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   SUMMARY CARDS
-   ========================================================= */
-
-document
-  .querySelectorAll(
-    ".summary[data-page]"
-  )
-  .forEach(card => {
-
-    card.addEventListener(
-      "click",
-      () => {
-
-        showPage(
-          card.dataset.page
-        );
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   MODAL CLOSE BUTTONS
-   ========================================================= */
-
-document
-  .querySelectorAll(
-    "[data-close]"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        const modal =
-          $(button.dataset.close);
-
-        if (modal) {
-
-          modal
-            .classList
-            .add("hidden");
-
-        }
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   CLOSE NORMAL MODALS
-   ========================================================= */
-
-document
-  .querySelectorAll(".modal")
-  .forEach(modal => {
-
-    modal.addEventListener(
-      "click",
-      event => {
-
-        if (
-          event.target ===
-          modal
-        ) {
-
-          modal
-            .classList
-            .add("hidden");
-
-        }
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   DYNAMIC DETAILS MODAL
-   ========================================================= */
-
-function createDetailsModal() {
-
-  if ($("recordDetailsModal")) {
-    return;
-  }
-
-
-  const modal =
-    document.createElement(
-      "div"
+  const vehicle =
+    vehicles.find(
+      v =>
+        String(v.id) ===
+        String(item.vehicle_id)
     );
 
 
-  modal.id =
-    "recordDetailsModal";
-
-
-  modal.className =
-    "modal";
-
-
-  modal.style.cssText = `
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,.55);
-    padding:18px;
-    overflow:auto;
-  `;
-
-
-  modal.innerHTML = `
-    <div
-      class="card"
-      style="
-        width:min(680px,100%);
-        max-height:90vh;
-        overflow:auto;
-        background:white;
-        border-radius:18px;
-        padding:22px;
-      "
-    ></div>
-  `;
-
-
-  document.body.appendChild(
-    modal
-  );
-
-
-  modal.addEventListener(
-    "click",
-    event => {
-
-      if (
-        event.target ===
-        modal ||
-        event.target.closest(
-          "[data-detail-close]"
-        )
-      ) {
-
-        closeDetailsModal();
-
-      }
-
-    }
-  );
-
-}
-
-
-function showDetailsModal(
-  html
-) {
-
-  createDetailsModal();
-
-
-  const modal =
-    $("recordDetailsModal");
-
-
-  const card =
-    modal.querySelector(
-      ".card"
-    );
-
-
-  card.innerHTML =
-    html;
-
-
-  modal.style.display =
-    "flex";
-
-}
-
-
-function closeDetailsModal() {
-
-  const modal =
-    $("recordDetailsModal");
-
-  if (modal) {
-
-    modal.style.display =
-      "none";
-
-  }
-
-}
-
-
-/* =========================================================
-   OPEN RECORD
-   ========================================================= */
-
-function openRecord(
-  type,
-  id
-) {
-
-  if (type === "expense") {
-
-    openExpenseDetails(id);
-
-    return;
-  }
-
-
-  if (type === "requisition") {
-
-    openRequisitionDetails(id);
-
-    return;
-  }
-
-
-  if (type === "petty") {
-
-    openPettyDetails(id);
-
-    return;
-  }
-
-
-  if (type === "vehicle") {
-
-    openVehicleDetails(id);
-
-  }
-
-}
-
-
-/* =========================================================
-   SEARCH RESULT CLICK SUPPORT
-   ========================================================= */
-
-document.addEventListener(
-  "click",
-  event => {
-
-    const expense =
-      event.target.closest(
-        "[data-expense-id]"
-      );
-
-
-    if (
-      expense &&
-      expense.closest(
-        "#expenseTable"
-      )
-    ) {
-
-      openExpenseDetails(
-        expense.dataset.expenseId
-      );
-
-    }
-
-
-    const pettyRow =
-      event.target.closest(
-        "[data-petty-id]"
-      );
-
-
-    if (pettyRow) {
-
-      openPettyDetails(
-        pettyRow.dataset.pettyId
-      );
-
-    }
-
-
-    const reqRow =
-      event.target.closest(
-        "[data-req-id]"
-      );
-
-
-    if (reqRow) {
-
-      openRequisitionDetails(
-        reqRow.dataset.reqId
-      );
-
-    }
-
-
-    const searchedExpense =
-      event.target.closest(
-        "[data-expense-id]"
-      );
-
-
-    if (
-      searchedExpense &&
-      searchedExpense.closest(
-        "#list"
-      )
-    ) {
-
-      openExpenseDetails(
-        searchedExpense.dataset.expenseId
-      );
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   INITIALIZE
-   ========================================================= */
-
-updateDate();
-
-createDetailsModal();
-
-console.log(
-  "Garage Operations Pro loaded."
-);
-
-console.log(
-  "Connected to:",
-  SUPABASE_URL
-);
+  showDetailsModal(`
+    <div class="head">
+
+      <h2>
+        ${esc(
+          item.req_no ||
+          "Requisition"
+        )}
+      </h2>
+
+      <button
+        class="x"
+       
