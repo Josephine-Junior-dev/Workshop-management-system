@@ -2,13 +2,13 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 /* =========================================================
    GARAGE OPERATIONS PRO
-   COMPLETE APP.JS
-   MATCHED TO YOUR CURRENT INDEX.HTML
+   FULLY CONNECTED / CLICKABLE APP.JS
+   MATCHED TO CURRENT INDEX.HTML
    ========================================================= */
 
 
 /* =========================================================
-   SUPABASE CONNECTION
+   SUPABASE
    ========================================================= */
 
 const SUPABASE_URL =
@@ -24,7 +24,7 @@ const sb = createClient(
 
 
 /* =========================================================
-   DOM HELPER
+   DOM
    ========================================================= */
 
 const $ = id =>
@@ -32,7 +32,31 @@ const $ = id =>
 
 
 /* =========================================================
-   GENERAL HELPERS
+   DATA
+   ========================================================= */
+
+let vehicles = [];
+let expenses = [];
+let petty = [];
+let requisitions = [];
+
+let currentUser = "";
+
+
+/* =========================================================
+   LOGIN USERS
+   ========================================================= */
+
+const USERS = {
+  username: "1234",
+  Josephine: "1234",
+  Boss: "1234",
+  Staff: "1234"
+};
+
+
+/* =========================================================
+   HELPERS
    ========================================================= */
 
 function money(value) {
@@ -81,11 +105,14 @@ function toast(message) {
   const box = $("toast");
 
   if (!box) {
+
     console.log(message);
+
     return;
   }
 
   box.textContent = message;
+
   box.style.display = "block";
 
   clearTimeout(
@@ -103,53 +130,21 @@ function toast(message) {
 
 
 /* =========================================================
-   APPLICATION DATA
-   ========================================================= */
-
-let vehicles = [];
-let expenses = [];
-let petty = [];
-let requisitions = [];
-
-let currentUser = "";
-
-
-/* =========================================================
-   LOGIN USERS
-   ========================================================= */
-
-const USERS = {
-
-  username: "1234",
-
-  Josephine: "1234",
-
-  Boss: "1234",
-
-  Staff: "1234"
-
-};
-
-
-/* =========================================================
-   SET USER DISPLAY
+   USER
    ========================================================= */
 
 function setUser(username) {
 
   currentUser = username;
 
-  const userNameElements =
-    document.querySelectorAll(
-      ".top-user b"
-    );
+  document
+    .querySelectorAll(".top-user b")
+    .forEach(element => {
 
-  userNameElements.forEach(
-    element => {
       element.textContent =
         username;
-    }
-  );
+
+    });
 
 }
 
@@ -194,11 +189,7 @@ if (loginForm) {
         return;
       }
 
-
-      currentUser = username;
-
       setUser(username);
-
 
       if ($("loginMsg")) {
 
@@ -207,22 +198,17 @@ if (loginForm) {
 
       }
 
-
       $("login")
         .classList
         .add("hidden");
-
 
       $("app")
         .classList
         .remove("hidden");
 
-
       updateDate();
 
-
       await loadData();
-
 
       showPage("dashboard");
 
@@ -275,8 +261,7 @@ if ($("logout")) {
 
       if ($("password")) {
 
-        $("password")
-          .value = "";
+        $("password").value = "";
 
       }
 
@@ -289,7 +274,7 @@ if ($("logout")) {
 
 
 /* =========================================================
-   LOAD ALL SUPABASE DATA
+   LOAD DATA
    ========================================================= */
 
 async function loadData() {
@@ -346,89 +331,51 @@ async function loadData() {
     ]);
 
 
-    /* -----------------------------------------
-       VEHICLES
-       ----------------------------------------- */
-
     if (vehicleResult.error) {
 
       console.error(
-        "Vehicles error:",
+        "Vehicles:",
         vehicleResult.error
       );
 
-      toast(
-        "Vehicles: " +
-        vehicleResult.error.message
-      );
-
     }
-
-    vehicles =
-      vehicleResult.data || [];
-
-
-    /* -----------------------------------------
-       EXPENSES
-       ----------------------------------------- */
 
     if (expenseResult.error) {
 
       console.error(
-        "Expenses error:",
+        "Expenses:",
         expenseResult.error
       );
 
-      toast(
-        "Expenses: " +
-        expenseResult.error.message
-      );
-
     }
-
-    expenses =
-      expenseResult.data || [];
-
-
-    /* -----------------------------------------
-       PETTY CASH
-       ----------------------------------------- */
 
     if (pettyResult.error) {
 
       console.error(
-        "Petty Cash error:",
+        "Petty cash:",
         pettyResult.error
       );
 
-      toast(
-        "Petty Cash: " +
-        pettyResult.error.message
-      );
-
     }
-
-    petty =
-      pettyResult.data || [];
-
-
-    /* -----------------------------------------
-       REQUISITIONS
-       ----------------------------------------- */
 
     if (requisitionResult.error) {
 
       console.error(
-        "Requisitions error:",
+        "Requisitions:",
         requisitionResult.error
       );
 
-      toast(
-        "Requisitions: " +
-        requisitionResult.error.message
-      );
-
     }
+
+
+    vehicles =
+      vehicleResult.data || [];
+
+    expenses =
+      expenseResult.data || [];
+
+    petty =
+      pettyResult.data || [];
 
     requisitions =
       requisitionResult.data || [];
@@ -439,12 +386,12 @@ async function loadData() {
   } catch (error) {
 
     console.error(
-      "Supabase error:",
+      "Supabase load error:",
       error
     );
 
     toast(
-      "Unable to load Supabase data."
+      "Unable to load garage data."
     );
 
   }
@@ -453,7 +400,7 @@ async function loadData() {
 
 
 /* =========================================================
-   RENDER EVERYTHING
+   RENDER ALL
    ========================================================= */
 
 function renderAll() {
@@ -507,39 +454,57 @@ function showPage(pageName) {
       button.classList.toggle(
         "active",
         button.dataset.page ===
-          pageName
+        pageName
       );
 
     });
 
 
+  if (pageName === "dashboard") {
+
+    renderDashboard();
+
+  }
+
   if (pageName === "vehicles") {
+
     renderVehicles();
+
   }
 
   if (pageName === "expenses") {
+
     renderExpenses();
+
   }
 
   if (pageName === "petty") {
+
     renderPettyCash();
+
   }
 
   if (pageName === "requisitions") {
+
     renderRequisitions();
+
+  }
+
+  if (pageName === "reports") {
+
+    renderDashboard();
+
   }
 
 }
 
 
 /* =========================================================
-   ALL NAVIGATION BUTTONS
+   NAVIGATION BUTTONS
    ========================================================= */
 
 document
-  .querySelectorAll(
-    "[data-page]"
-  )
+  .querySelectorAll(".nav[data-page]")
   .forEach(button => {
 
     button.addEventListener(
@@ -548,14 +513,9 @@ document
 
         event.preventDefault();
 
-        const page =
-          button.dataset.page;
-
-        if (page) {
-
-          showPage(page);
-
-        }
+        showPage(
+          button.dataset.page
+        );
 
       }
     );
@@ -573,7 +533,9 @@ function renderDashboard() {
     expenses.reduce(
       (sum, item) =>
         sum +
-        Number(item.amount || 0),
+        Number(
+          item.amount || 0
+        ),
       0
     );
 
@@ -582,7 +544,9 @@ function renderDashboard() {
     petty.reduce(
       (sum, item) =>
         sum +
-        Number(item.amount || 0),
+        Number(
+          item.amount || 0
+        ),
       0
     );
 
@@ -597,7 +561,7 @@ function renderDashboard() {
     ).length;
 
 
-  const underRepair =
+  const repair =
     vehicles.filter(
       item =>
         item.status ===
@@ -605,7 +569,7 @@ function renderDashboard() {
     ).length;
 
 
-  const completed =
+  const active =
     vehicles.filter(
       item =>
         item.status ===
@@ -615,7 +579,7 @@ function renderDashboard() {
     ).length;
 
 
-  const storage =
+  const out =
     vehicles.filter(
       item =>
         item.status ===
@@ -632,13 +596,13 @@ function renderDashboard() {
   if ($("dashActive"))
     $("dashActive")
       .textContent =
-      completed;
+      active;
 
 
   if ($("dashRepair"))
     $("dashRepair")
       .textContent =
-      underRepair;
+      repair;
 
 
   if ($("dashExpenses"))
@@ -689,44 +653,67 @@ function renderDashboard() {
       money(totalPetty);
 
 
-  /* -----------------------------------------
-     DONUT
-     ----------------------------------------- */
+  renderDonut(
+    active,
+    repair,
+    out
+  );
 
-  if ($("donut")) {
+  renderExpenseChart();
 
-    const total =
-      vehicles.length;
+  renderActivity();
 
-    if (!total) {
-
-      $("donut").style.background =
-        "#e5e7eb";
-
-    } else {
-
-      const activePercent =
-        completed /
-        total *
-        100;
-
-      const repairPercent =
-        (
-          completed +
-          underRepair
-        ) /
-        total *
-        100;
+}
 
 
-      $("donut").style.background =
-        `conic-gradient(
-          #16a36a 0 ${activePercent}%,
-          #f79009 ${activePercent}% ${repairPercent}%,
-          #ef4444 ${repairPercent}% 100%
-        )`;
+/* =========================================================
+   DONUT
+   ========================================================= */
 
-    }
+function renderDonut(
+  active,
+  repair,
+  out
+) {
+
+  const donut =
+    $("donut");
+
+  if (!donut) {
+    return;
+  }
+
+
+  const total =
+    active +
+    repair +
+    out;
+
+
+  if (!total) {
+
+    donut.style.background =
+      "#e5e7eb";
+
+  } else {
+
+    const activePercent =
+      active /
+      total *
+      100;
+
+    const repairPercent =
+      repair /
+      total *
+      100;
+
+
+    donut.style.background =
+      `conic-gradient(
+        #16a36a 0 ${activePercent}%,
+        #f79009 ${activePercent}% ${activePercent + repairPercent}%,
+        #ef4444 ${activePercent + repairPercent}% 100%
+      )`;
 
   }
 
@@ -740,30 +727,25 @@ function renderDashboard() {
   if ($("activeLegend"))
     $("activeLegend")
       .textContent =
-      completed;
+      active;
 
 
   if ($("repairLegend"))
     $("repairLegend")
       .textContent =
-      underRepair;
+      repair;
 
 
   if ($("outLegend"))
     $("outLegend")
       .textContent =
-      storage;
-
-
-  renderExpenseChart();
-
-  renderActivity();
+      out;
 
 }
 
 
 /* =========================================================
-   MONTHLY EXPENSE CHART
+   EXPENSE CHART
    ========================================================= */
 
 function renderExpenseChart() {
@@ -792,14 +774,14 @@ function renderExpenseChart() {
   ];
 
 
-  const currentYear =
+  const year =
     new Date()
       .getFullYear();
 
 
   const values =
     months.map(
-      (_, monthIndex) => {
+      (_, index) => {
 
         return expenses
           .filter(item => {
@@ -812,9 +794,9 @@ function renderExpenseChart() {
 
             return (
               date.getFullYear() ===
-                currentYear &&
+              year &&
               date.getMonth() ===
-                monthIndex
+              index
             );
 
           })
@@ -831,7 +813,7 @@ function renderExpenseChart() {
     );
 
 
-  const maximum =
+  const max =
     Math.max(
       ...values,
       1
@@ -846,26 +828,23 @@ function renderExpenseChart() {
           const height =
             Math.max(
               5,
-              (
-                value /
-                maximum
-              ) *
-                100
+              value /
+              max *
+              100
             );
 
 
           return `
             <div
               class="bar-wrap"
-              style="height:100%;"
+              style="height:100%;cursor:pointer;"
+              data-month="${index}"
+              title="${money(value)}"
             >
 
               <div
                 class="bar"
-                style="
-                  height:${height}%;
-                "
-                title="${money(value)}"
+                style="height:${height}%"
               ></div>
 
               <span class="bar-label">
@@ -878,6 +857,24 @@ function renderExpenseChart() {
         }
       )
       .join("");
+
+
+  chart
+    .querySelectorAll(".bar-wrap")
+    .forEach(bar => {
+
+      bar.addEventListener(
+        "click",
+        () => {
+
+          showPage(
+            "expenses"
+          );
+
+        }
+      );
+
+    });
 
 }
 
@@ -905,12 +902,13 @@ function renderActivity() {
 
       activities.push({
 
+        type: "expense",
+
+        id: item.id,
+
         text:
-          "Expense: " +
-          (
-            item.description ||
-            "Garage expense"
-          ),
+          item.description ||
+          "Expense",
 
         value:
           money(item.amount)
@@ -926,12 +924,13 @@ function renderActivity() {
 
       activities.push({
 
+        type: "requisition",
+
+        id: item.id,
+
         text:
-          "Requisition: " +
-          (
-            item.req_no ||
-            "Request"
-          ),
+          item.req_no ||
+          "Requisition",
 
         value:
           item.status ||
@@ -945,7 +944,7 @@ function renderActivity() {
   if (!activities.length) {
 
     box.innerHTML =
-      `<p>No recent activity.</p>`;
+      "<p>No recent activity.</p>";
 
     return;
   }
@@ -956,7 +955,13 @@ function renderActivity() {
       .slice(0, 6)
       .map(
         item => `
-          <div class="activity-row">
+
+          <div
+            class="activity-row"
+            data-type="${item.type}"
+            data-id="${item.id}"
+            style="cursor:pointer"
+          >
 
             <span class="activity-icon">
               ◈
@@ -971,9 +976,29 @@ function renderActivity() {
             </small>
 
           </div>
+
         `
       )
       .join("");
+
+
+  box
+    .querySelectorAll(".activity-row")
+    .forEach(row => {
+
+      row.addEventListener(
+        "click",
+        () => {
+
+          openRecord(
+            row.dataset.type,
+            row.dataset.id
+          );
+
+        }
+      );
+
+    });
 
 }
 
@@ -1010,7 +1035,7 @@ function renderVehicles() {
     vehicles.filter(
       vehicle => {
 
-        const registration =
+        const reg =
           String(
             vehicle.registration ||
             ""
@@ -1026,25 +1051,17 @@ function renderVehicles() {
             .toLowerCase();
 
 
-        const searchMatch =
-          !search ||
-          registration.includes(
-            search
-          ) ||
-          customer.includes(
-            search
-          );
-
-
-        const filterMatch =
-          !filter ||
-          vehicle.status ===
-            filter;
-
-
         return (
-          searchMatch &&
-          filterMatch
+          (
+            !search ||
+            reg.includes(search) ||
+            customer.includes(search)
+          ) &&
+          (
+            !filter ||
+            vehicle.status ===
+            filter
+          )
         );
 
       }
@@ -1053,14 +1070,16 @@ function renderVehicles() {
 
   if (!filtered.length) {
 
-    list.innerHTML =
-      `
-      <div style="padding:24px;text-align:center;">
-        <p>
-          No vehicles found.
-        </p>
+    list.innerHTML = `
+      <div
+        style="
+          padding:30px;
+          text-align:center;
+        "
+      >
+        <p>No vehicles found.</p>
       </div>
-      `;
+    `;
 
     return;
   }
@@ -1070,22 +1089,92 @@ function renderVehicles() {
     filtered
       .map(
         vehicle =>
-          vehicleCard(vehicle)
+          vehicleCard(
+            vehicle
+          )
       )
       .join("");
+
+
+  list
+    .querySelectorAll(
+      ".vehicle-click"
+    )
+    .forEach(card => {
+
+      card.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target.closest(
+              "button"
+            )
+          ) {
+            return;
+          }
+
+          openVehicleDetails(
+            card.dataset.id
+          );
+
+        }
+      );
+
+    });
+
+
+  /*
+   * If the search identifies a
+   * specific vehicle, show its
+   * expenses directly underneath.
+   */
+
+  if (search) {
+
+    const matchedVehicle =
+      filtered.find(
+        vehicle =>
+          String(
+            vehicle.registration ||
+            ""
+          )
+            .toLowerCase()
+            .includes(search)
+      );
+
+
+    if (matchedVehicle) {
+
+      const expensesHTML =
+        vehicleExpensesHTML(
+          matchedVehicle
+        );
+
+
+      list.insertAdjacentHTML(
+        "beforeend",
+        expensesHTML
+      );
+
+    }
+
+  }
 
 }
 
 
-function vehicleCard(vehicle) {
+/* =========================================================
+   VEHICLE CARD
+   ========================================================= */
+
+function vehicleCard(
+  vehicle
+) {
 
   const vehicleExpenses =
-    expenses.filter(
-      expense =>
-        String(
-          expense.vehicle_id
-        ) ===
-        String(vehicle.id)
+    getVehicleExpenses(
+      vehicle.id
     );
 
 
@@ -1112,7 +1201,7 @@ function vehicleCard(vehicle) {
     );
 
 
-  const balance =
+  const outstanding =
     Math.max(
       0,
       billed - paid
@@ -1120,7 +1209,11 @@ function vehicleCard(vehicle) {
 
 
   return `
-    <article class="vehicle">
+    <article
+      class="vehicle vehicle-click"
+      data-id="${esc(vehicle.id)}"
+      style="cursor:pointer"
+    >
 
       <div class="vehicle-top">
 
@@ -1133,21 +1226,24 @@ function vehicleCard(vehicle) {
           </h3>
 
           <span class="muted">
+
             ${esc(
               vehicle.customer
             )}
+
             •
+
             ${esc(
               vehicle.date_in || ""
             )}
+
           </span>
 
         </div>
 
         <span class="badge">
           ${esc(
-            vehicle.status ||
-            ""
+            vehicle.status || ""
           )}
         </span>
 
@@ -1155,49 +1251,74 @@ function vehicleCard(vehicle) {
 
 
       <p class="muted">
+
         ${esc(
           vehicle.description ||
           "No description"
         )}
+
       </p>
 
 
       <div class="grid">
 
         <div>
-          <small>Expenses</small>
+
+          <small>
+            Expenses
+          </small>
+
           <b>
             ${money(
               expenseTotal
             )}
           </b>
+
         </div>
 
+
         <div>
-          <small>Charge-out</small>
+
+          <small>
+            Charge-out
+          </small>
+
           <b>
             ${money(
               billed
             )}
           </b>
+
         </div>
 
+
         <div>
-          <small>Paid</small>
+
+          <small>
+            Paid
+          </small>
+
           <b>
             ${money(
               paid
             )}
           </b>
+
         </div>
 
+
         <div>
-          <small>Outstanding</small>
+
+          <small>
+            Outstanding
+          </small>
+
           <b>
             ${money(
-              balance
+              outstanding
             )}
           </b>
+
         </div>
 
       </div>
@@ -1206,21 +1327,35 @@ function vehicleCard(vehicle) {
       <div class="actions">
 
         <button
-          onclick="window.addVehicleExpense('${vehicle.id}')"
+          onclick="
+            window.addVehicleExpense(
+              '${esc(vehicle.id)}'
+            )
+          "
         >
           + Expense
         </button>
 
+
         <button
           class="secondary"
-          onclick="window.editVehicle('${vehicle.id}')"
+          onclick="
+            window.editVehicle(
+              '${esc(vehicle.id)}'
+            )
+          "
         >
           Edit
         </button>
 
+
         <button
           class="secondary"
-          onclick="window.deleteVehicle('${vehicle.id}')"
+          onclick="
+            window.deleteVehicle(
+              '${esc(vehicle.id)}'
+            )
+          "
         >
           Delete
         </button>
@@ -1229,6 +1364,150 @@ function vehicleCard(vehicle) {
 
     </article>
   `;
+
+}
+
+
+/* =========================================================
+   VEHICLE EXPENSES AFTER SEARCH
+   ========================================================= */
+
+function vehicleExpensesHTML(
+  vehicle
+) {
+
+  const list =
+    getVehicleExpenses(
+      vehicle.id
+    );
+
+
+  return `
+    <section
+      class="panel"
+      style="
+        margin-top:18px;
+        cursor:pointer;
+      "
+    >
+
+      <div
+        class="panel-title"
+      >
+
+        <div>
+
+          <h2>
+            ${esc(
+              vehicle.registration
+            )}
+            — Expenses
+          </h2>
+
+          <small>
+            Expenses linked to this vehicle
+          </small>
+
+        </div>
+
+        <strong>
+          ${money(
+            list.reduce(
+              (sum, item) =>
+                sum +
+                Number(
+                  item.amount || 0
+                ),
+              0
+            )
+          )}
+        </strong>
+
+      </div>
+
+
+      ${
+        list.length
+          ? list
+              .map(
+                expense =>
+                  `
+                  <div
+                    class="expense-row clickable-record"
+                    data-expense-id="${esc(expense.id)}"
+                    style="cursor:pointer"
+                  >
+
+                    <span>
+
+                      <b>
+                        ${esc(
+                          expense.description ||
+                          "Expense"
+                        )}
+                      </b>
+
+                      <small class="muted">
+
+                        ${esc(
+                          expense.expense_date ||
+                          ""
+                        )}
+
+                        •
+
+                        ${esc(
+                          expense.category ||
+                          ""
+                        )}
+
+                      </small>
+
+                    </span>
+
+                    <b>
+                      ${money(
+                        expense.amount
+                      )}
+                    </b>
+
+                  </div>
+                  `
+              )
+              .join("")
+          : `
+              <p
+                style="
+                  padding:15px;
+                "
+              >
+                No expenses recorded
+                for this vehicle.
+              </p>
+            `
+      }
+
+    </section>
+  `;
+
+}
+
+
+/* =========================================================
+   GET VEHICLE EXPENSES
+   ========================================================= */
+
+function getVehicleExpenses(
+  vehicleId
+) {
+
+  return expenses.filter(
+    expense =>
+      String(
+        expense.vehicle_id
+      ) ===
+      String(vehicleId)
+  );
 
 }
 
@@ -1253,6 +1532,332 @@ if ($("filter")) {
     "change",
     renderVehicles
   );
+
+}
+
+
+/* =========================================================
+   VEHICLE DETAILS
+   ========================================================= */
+
+function openVehicleDetails(
+  vehicleId
+) {
+
+  const vehicle =
+    vehicles.find(
+      item =>
+        String(item.id) ===
+        String(vehicleId)
+    );
+
+
+  if (!vehicle) {
+    return;
+  }
+
+
+  const vehicleExpenses =
+    getVehicleExpenses(
+      vehicle.id
+    );
+
+
+  const expenseTotal =
+    vehicleExpenses.reduce(
+      (sum, item) =>
+        sum +
+        Number(
+          item.amount || 0
+        ),
+      0
+    );
+
+
+  const billed =
+    Number(
+      vehicle.billed || 0
+    );
+
+
+  const paid =
+    Number(
+      vehicle.paid || 0
+    );
+
+
+  const outstanding =
+    Math.max(
+      0,
+      billed - paid
+    );
+
+
+  showDetailsModal(
+    `
+      <div class="head">
+
+        <h2>
+          ${esc(
+            vehicle.registration
+          )}
+        </h2>
+
+        <button
+          class="x"
+          data-detail-close
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        style="
+          display:grid;
+          gap:12px;
+        "
+      >
+
+        <div>
+          <small>Customer</small>
+          <strong>
+            ${esc(
+              vehicle.customer
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Status</small>
+          <strong>
+            ${esc(
+              vehicle.status
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Date received</small>
+          <strong>
+            ${esc(
+              vehicle.date_in ||
+              ""
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Job type</small>
+          <strong>
+            ${esc(
+              vehicle.job_type ||
+              ""
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Charge-out</small>
+          <strong>
+            ${money(billed)}
+          </strong>
+        </div>
+
+        <div>
+          <small>Payment received</small>
+          <strong>
+            ${money(paid)}
+          </strong>
+        </div>
+
+        <div>
+          <small>Outstanding</small>
+          <strong>
+            ${money(outstanding)}
+          </strong>
+        </div>
+
+        <div>
+          <small>Total expenses</small>
+          <strong>
+            ${money(expenseTotal)}
+          </strong>
+        </div>
+
+        <div>
+
+          <small>
+            Description
+          </small>
+
+          <p>
+            ${esc(
+              vehicle.description ||
+              "No description"
+            )}
+          </p>
+
+        </div>
+
+
+        <hr>
+
+
+        <h3>
+          Vehicle Expenses
+        </h3>
+
+
+        ${
+          vehicleExpenses.length
+            ? vehicleExpenses
+                .map(
+                  expense =>
+                    `
+                    <div
+                      class="expense-row"
+                      data-detail-expense="${esc(expense.id)}"
+                      style="cursor:pointer"
+                    >
+
+                      <span>
+
+                        <b>
+                          ${esc(
+                            expense.description ||
+                            "Expense"
+                          )}
+                        </b>
+
+                        <small>
+                          ${esc(
+                            expense.category ||
+                            ""
+                          )}
+                          •
+                          ${esc(
+                            expense.expense_date ||
+                            ""
+                          )}
+                        </small>
+
+                      </span>
+
+                      <b>
+                        ${money(
+                          expense.amount
+                        )}
+                      </b>
+
+                    </div>
+                    `
+                )
+                .join("")
+            : `
+                <p>
+                  No expenses recorded.
+                </p>
+              `
+        }
+
+
+        <div class="actions">
+
+          <button
+            data-detail-add-expense="${esc(vehicle.id)}"
+          >
+            + Add Expense
+          </button>
+
+          <button
+            class="secondary"
+            data-detail-edit-vehicle="${esc(vehicle.id)}"
+          >
+            Edit Vehicle
+          </button>
+
+        </div>
+
+      </div>
+    `
+  );
+
+
+  const modal =
+    $("recordDetailsModal");
+
+
+  if (!modal) {
+    return;
+  }
+
+
+  modal
+    .querySelectorAll(
+      "[data-detail-expense]"
+    )
+    .forEach(row => {
+
+      row.addEventListener(
+        "click",
+        () => {
+
+          openExpenseDetails(
+            row.dataset.detailExpense
+          );
+
+        }
+      );
+
+    });
+
+
+  const addButton =
+    modal.querySelector(
+      "[data-detail-add-expense]"
+    );
+
+  if (addButton) {
+
+    addButton.addEventListener(
+      "click",
+      () => {
+
+        closeDetailsModal();
+
+        window.addVehicleExpense(
+          vehicle.id
+        );
+
+      }
+    );
+
+  }
+
+
+  const editButton =
+    modal.querySelector(
+      "[data-detail-edit-vehicle]"
+    );
+
+  if (editButton) {
+
+    editButton.addEventListener(
+      "click",
+      () => {
+
+        closeDetailsModal();
+
+        openVehicleModal(
+          vehicle
+        );
+
+      }
+    );
+
+  }
 
 }
 
@@ -1426,12 +2031,11 @@ if ($("vehicleForm")) {
         if (result.error) {
 
           console.error(
-            "Vehicle save error:",
+            "Vehicle save:",
             result.error
           );
 
           toast(
-            "Vehicle error: " +
             result.error.message
           );
 
@@ -1449,8 +2053,8 @@ if ($("vehicleForm")) {
 
         toast(
           id
-            ? "Vehicle updated successfully."
-            : "Vehicle added successfully."
+            ? "Vehicle updated."
+            : "Vehicle added."
         );
 
       }
@@ -1474,19 +2078,13 @@ window.editVehicle =
       );
 
 
-    if (!vehicle) {
+    if (vehicle) {
 
-      toast(
-        "Vehicle not found."
+      openVehicleModal(
+        vehicle
       );
 
-      return;
     }
-
-
-    openVehicleModal(
-      vehicle
-    );
 
   };
 
@@ -1511,13 +2109,11 @@ window.deleteVehicle =
     }
 
 
-    const confirmed =
-      confirm(
-        `Delete vehicle ${vehicle.registration}?`
-      );
-
-
-    if (!confirmed) {
+    if (
+      !confirm(
+        `Delete ${vehicle.registration}?`
+      )
+    ) {
       return;
     }
 
@@ -1534,11 +2130,6 @@ window.deleteVehicle =
 
     if (result.error) {
 
-      console.error(
-        "Vehicle delete error:",
-        result.error
-      );
-
       toast(
         result.error.message
       );
@@ -1549,7 +2140,6 @@ window.deleteVehicle =
 
     await loadData();
 
-
     toast(
       "Vehicle deleted."
     );
@@ -1558,7 +2148,7 @@ window.deleteVehicle =
 
 
 /* =========================================================
-   ADD EXPENSE FROM VEHICLE
+   EXPENSE FORM
    ========================================================= */
 
 window.addVehicleExpense =
@@ -1625,7 +2215,12 @@ function renderExpenses() {
 
     table.innerHTML =
       `
-      <div style="padding:20px">
+      <div
+        style="
+          padding:20px;
+          text-align:center;
+        "
+      >
         <p>No expenses recorded.</p>
       </div>
       `;
@@ -1637,69 +2232,272 @@ function renderExpenses() {
   table.innerHTML =
     expenses
       .map(
-        item => {
-
-          const vehicle =
-            vehicles.find(
-              v =>
-                String(v.id) ===
-                String(
-                  item.vehicle_id
-                )
-            );
-
-
-          return `
-            <div class="expense-row">
-
-              <span>
-
-                <b>
-                  ${esc(
-                    item.description ||
-                    "Expense"
-                  )}
-                </b>
-
-                <small class="muted">
-
-                  ${esc(
-                    item.expense_date ||
-                    ""
-                  )}
-
-                  •
-
-                  ${esc(
-                    item.category ||
-                    ""
-                  )}
-
-                  ${
-                    vehicle
-                      ? " • " +
-                        esc(
-                          vehicle.registration
-                        )
-                      : ""
-                  }
-
-                </small>
-
-              </span>
-
-              <b>
-                ${money(
-                  item.amount
-                )}
-              </b>
-
-            </div>
-          `;
-
-        }
+        expense =>
+          expenseRow(
+            expense
+          )
       )
       .join("");
+
+
+  table
+    .querySelectorAll(
+      "[data-expense-id]"
+    )
+    .forEach(row => {
+
+      row.addEventListener(
+        "click",
+        () => {
+
+          openExpenseDetails(
+            row.dataset.expenseId
+          );
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   EXPENSE ROW
+   ========================================================= */
+
+function expenseRow(
+  expense
+) {
+
+  const vehicle =
+    vehicles.find(
+      v =>
+        String(v.id) ===
+        String(
+          expense.vehicle_id
+        )
+    );
+
+
+  return `
+    <div
+      class="expense-row"
+      data-expense-id="${esc(expense.id)}"
+      style="cursor:pointer"
+    >
+
+      <span>
+
+        <b>
+          ${esc(
+            expense.description ||
+            "Expense"
+          )}
+        </b>
+
+        <small class="muted">
+
+          ${esc(
+            expense.expense_date ||
+            ""
+          )}
+
+          •
+
+          ${esc(
+            expense.category ||
+            ""
+          )}
+
+          ${
+            vehicle
+              ? " • " +
+                esc(
+                  vehicle.registration
+                )
+              : ""
+          }
+
+        </small>
+
+      </span>
+
+      <b>
+        ${money(
+          expense.amount
+        )}
+      </b>
+
+    </div>
+  `;
+
+}
+
+
+/* =========================================================
+   EXPENSE DETAILS
+   ========================================================= */
+
+function openExpenseDetails(
+  expenseId
+) {
+
+  const expense =
+    expenses.find(
+      item =>
+        String(item.id) ===
+        String(expenseId)
+    );
+
+
+  if (!expense) {
+    return;
+  }
+
+
+  const vehicle =
+    vehicles.find(
+      v =>
+        String(v.id) ===
+        String(
+          expense.vehicle_id
+        )
+    );
+
+
+  showDetailsModal(
+    `
+      <div class="head">
+
+        <h2>
+          Expense Details
+        </h2>
+
+        <button
+          class="x"
+          data-detail-close
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        style="
+          display:grid;
+          gap:14px;
+        "
+      >
+
+        <div>
+          <small>Description</small>
+          <strong>
+            ${esc(
+              expense.description ||
+              "Expense"
+            )}
+          </strong>
+        </div>
+
+
+        <div>
+          <small>Amount</small>
+          <strong>
+            ${money(
+              expense.amount
+            )}
+          </strong>
+        </div>
+
+
+        <div>
+          <small>Category</small>
+          <strong>
+            ${esc(
+              expense.category ||
+              ""
+            )}
+          </strong>
+        </div>
+
+
+        <div>
+          <small>Date</small>
+          <strong>
+            ${esc(
+              expense.expense_date ||
+              ""
+            )}
+          </strong>
+        </div>
+
+
+        <div>
+          <small>Vehicle</small>
+
+          ${
+            vehicle
+              ? `
+                <strong
+                  data-expense-vehicle="${esc(vehicle.id)}"
+                  style="cursor:pointer"
+                >
+                  ${esc(
+                    vehicle.registration
+                  )}
+                  —
+                  ${esc(
+                    vehicle.customer
+                  )}
+                </strong>
+              `
+              : `
+                <strong>
+                  Not linked
+                </strong>
+              `
+          }
+
+        </div>
+
+      </div>
+    `
+  );
+
+
+  const modal =
+    $("recordDetailsModal");
+
+
+  if (!modal) {
+    return;
+  }
+
+
+  const vehicleLink =
+    modal.querySelector(
+      "[data-expense-vehicle]"
+    );
+
+
+  if (vehicleLink) {
+
+    vehicleLink.addEventListener(
+      "click",
+      () => {
+
+        closeDetailsModal();
+
+        openVehicleDetails(
+          vehicle.id
+        );
+
+      }
+    );
+
+  }
 
 }
 
@@ -1721,7 +2519,7 @@ document
         if (!vehicles.length) {
 
           toast(
-            "Please add a vehicle first."
+            "Add a vehicle first."
           );
 
           showPage(
@@ -1732,8 +2530,36 @@ document
         }
 
 
+        /*
+         * If a vehicle is currently
+         * selected by search, use it.
+         */
+
+        const search =
+          (
+            $("search")?.value ||
+            ""
+          )
+            .trim()
+            .toLowerCase();
+
+
+        const selected =
+          vehicles.find(
+            vehicle =>
+              String(
+                vehicle.registration ||
+                ""
+              )
+                .toLowerCase()
+                .includes(search)
+          );
+
+
         window.addVehicleExpense(
-          vehicles[0].id
+          selected
+            ? selected.id
+            : vehicles[0].id
         );
 
       }
@@ -1791,12 +2617,11 @@ if ($("expenseForm")) {
         if (result.error) {
 
           console.error(
-            "Expense save error:",
+            "Expense:",
             result.error
           );
 
           toast(
-            "Expense error: " +
             result.error.message
           );
 
@@ -1813,7 +2638,7 @@ if ($("expenseForm")) {
 
 
         toast(
-          "Expense recorded successfully."
+          "Expense recorded."
         );
 
       }
@@ -1860,7 +2685,12 @@ function renderPettyCash() {
 
     table.innerHTML =
       `
-      <div style="padding:20px">
+      <div
+        style="
+          padding:20px;
+          text-align:center;
+        "
+      >
         <p>No petty cash transactions.</p>
       </div>
       `;
@@ -1873,7 +2703,12 @@ function renderPettyCash() {
     petty
       .map(
         item => `
-          <div class="expense-row">
+
+          <div
+            class="expense-row"
+            data-petty-id="${esc(item.id)}"
+            style="cursor:pointer"
+          >
 
             <span>
 
@@ -1918,15 +2753,148 @@ function renderPettyCash() {
             </b>
 
           </div>
+
         `
       )
       .join("");
+
+
+  table
+    .querySelectorAll(
+      "[data-petty-id]"
+    )
+    .forEach(row => {
+
+      row.addEventListener(
+        "click",
+        () => {
+
+          openPettyDetails(
+            row.dataset.pettyId
+          );
+
+        }
+      );
+
+    });
 
 }
 
 
 /* =========================================================
-   PETTY CASH ADD BUTTON
+   PETTY CASH DETAILS
+   ========================================================= */
+
+function openPettyDetails(
+  id
+) {
+
+  const item =
+    petty.find(
+      row =>
+        String(row.id) ===
+        String(id)
+    );
+
+
+  if (!item) {
+    return;
+  }
+
+
+  showDetailsModal(
+    `
+      <div class="head">
+
+        <h2>
+          Petty Cash Transaction
+        </h2>
+
+        <button
+          class="x"
+          data-detail-close
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        style="
+          display:grid;
+          gap:14px;
+        "
+      >
+
+        <div>
+          <small>Description</small>
+          <strong>
+            ${esc(
+              item.description ||
+              ""
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Amount</small>
+          <strong>
+            ${money(
+              item.amount
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Paid to</small>
+          <strong>
+            ${esc(
+              item.paid_to ||
+              ""
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Category</small>
+          <strong>
+            ${esc(
+              item.category ||
+              ""
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Date</small>
+          <strong>
+            ${esc(
+              item.cash_date ||
+              ""
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Notes</small>
+          <p>
+            ${esc(
+              item.notes ||
+              "No notes"
+            )}
+          </p>
+        </div>
+
+      </div>
+    `
+  );
+
+}
+
+
+/* =========================================================
+   PETTY CASH ADD
    ========================================================= */
 
 document
@@ -1969,7 +2937,7 @@ document
           );
 
 
-        if (!amount) {
+        if (amount <= 0) {
 
           toast(
             "Enter a valid amount."
@@ -1987,30 +2955,21 @@ document
               cash_date:
                 todayISO(),
 
-              description:
-                description,
+              description,
 
               paid_to:
                 paidTo,
 
-              category:
-                category,
+              category,
 
-              amount:
-                amount,
+              amount,
 
-              notes:
-                ""
+              notes: ""
 
             });
 
 
         if (result.error) {
-
-          console.error(
-            "Petty cash error:",
-            result.error
-          );
 
           toast(
             result.error.message
@@ -2024,7 +2983,7 @@ document
 
 
         toast(
-          "Petty cash transaction saved."
+          "Petty cash saved."
         );
 
       }
@@ -2051,7 +3010,12 @@ function renderRequisitions() {
 
     table.innerHTML =
       `
-      <div style="padding:20px">
+      <div
+        style="
+          padding:20px;
+          text-align:center;
+        "
+      >
         <p>No requisitions found.</p>
       </div>
       `;
@@ -2065,7 +3029,11 @@ function renderRequisitions() {
       .map(
         item => `
 
-          <div class="expense-row">
+          <div
+            class="expense-row"
+            data-req-id="${esc(item.id)}"
+            style="cursor:pointer"
+          >
 
             <span>
 
@@ -2077,7 +3045,7 @@ function renderRequisitions() {
               </b>
 
               —
-
+              
               ${esc(
                 item.item_description ||
                 ""
@@ -2102,12 +3070,6 @@ function renderRequisitions() {
                   item.total_amount
                 )}
 
-                •
-                ${esc(
-                  item.req_date ||
-                  ""
-                )}
-
               </small>
 
             </span>
@@ -2125,13 +3087,165 @@ function renderRequisitions() {
       )
       .join("");
 
+
+  table
+    .querySelectorAll(
+      "[data-req-id]"
+    )
+    .forEach(row => {
+
+      row.addEventListener(
+        "click",
+        () => {
+
+          openRequisitionDetails(
+            row.dataset.reqId
+          );
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   REQUISITION DETAILS
+   ========================================================= */
+
+function openRequisitionDetails(
+  id
+) {
+
+  const item =
+    requisitions.find(
+      row =>
+        String(row.id) ===
+        String(id)
+    );
+
+
+  if (!item) {
+    return;
+  }
+
+
+  showDetailsModal(
+    `
+      <div class="head">
+
+        <h2>
+          ${esc(
+            item.req_no ||
+            "Requisition"
+          )}
+        </h2>
+
+        <button
+          class="x"
+          data-detail-close
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        style="
+          display:grid;
+          gap:14px;
+        "
+      >
+
+        <div>
+          <small>Requested by</small>
+          <strong>
+            ${esc(
+              item.requested_by ||
+              ""
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Date</small>
+          <strong>
+            ${esc(
+              item.req_date ||
+              ""
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Item</small>
+          <strong>
+            ${esc(
+              item.item_description ||
+              ""
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Quantity</small>
+          <strong>
+            ${esc(
+              item.quantity ||
+              0
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Unit cost</small>
+          <strong>
+            ${money(
+              item.unit_cost
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Total</small>
+          <strong>
+            ${money(
+              item.total_amount
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Status</small>
+          <strong>
+            ${esc(
+              item.status ||
+              "Pending"
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <small>Notes</small>
+          <p>
+            ${esc(
+              item.notes ||
+              "No notes"
+            )}
+          </p>
+        </div>
+
+      </div>
+    `
+  );
+
 }
 
 
 /* =========================================================
    NEW REQUISITION
-   CURRENT HTML HAS NO REQUISITION MODAL
-   SO USE A SIMPLE INPUT FLOW
    ========================================================= */
 
 document
@@ -2144,12 +3258,16 @@ document
       "click",
       async () => {
 
+        const nextNumber =
+          requisitions.length + 1;
+
+
         const reqNo =
           prompt(
             "Requisition number:",
             "REQ-" +
             String(
-              requisitions.length + 1
+              nextNumber
             ).padStart(
               3,
               "0"
@@ -2197,7 +3315,7 @@ document
         ) {
 
           toast(
-            "Enter valid quantity and unit cost."
+            "Enter valid values."
           );
 
           return;
@@ -2209,8 +3327,7 @@ document
             .from("requisitions")
             .insert({
 
-              req_no:
-                reqNo,
+              req_no,
 
               req_date:
                 todayISO(),
@@ -2221,8 +3338,7 @@ document
               item_description:
                 description,
 
-              quantity:
-                quantity,
+              quantity,
 
               unit_cost:
                 unitCost,
@@ -2234,18 +3350,12 @@ document
               status:
                 "Pending",
 
-              notes:
-                ""
+              notes: ""
 
             });
 
 
         if (result.error) {
-
-          console.error(
-            "Requisition error:",
-            result.error
-          );
 
           toast(
             result.error.message
@@ -2259,7 +3369,318 @@ document
 
 
         toast(
-          "Requisition created successfully."
+          "Requisition created."
+        );
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   GLOBAL SEARCH
+   ========================================================= */
+
+if ($("globalSearch")) {
+
+  $("globalSearch")
+    .addEventListener(
+      "input",
+      event => {
+
+        const value =
+          event.target.value
+            .trim()
+            .toLowerCase();
+
+
+        if (!value) {
+
+          return;
+        }
+
+
+        /*
+         * VEHICLE SEARCH
+         */
+
+        const vehicle =
+          vehicles.find(
+            item => {
+
+              const reg =
+                String(
+                  item.registration ||
+                  ""
+                )
+                  .toLowerCase();
+
+              const customer =
+                String(
+                  item.customer ||
+                  ""
+                )
+                  .toLowerCase();
+
+              return (
+                reg.includes(value) ||
+                customer.includes(value)
+              );
+
+            }
+          );
+
+
+        if (vehicle) {
+
+          showPage(
+            "vehicles"
+          );
+
+          if ($("search")) {
+
+            $("search").value =
+              value;
+
+          }
+
+          renderVehicles();
+
+          return;
+
+        }
+
+
+        /*
+         * EXPENSE SEARCH
+         */
+
+        const expense =
+          expenses.find(
+            item => {
+
+              const description =
+                String(
+                  item.description ||
+                  ""
+                )
+                  .toLowerCase();
+
+              const category =
+                String(
+                  item.category ||
+                  ""
+                )
+                  .toLowerCase();
+
+              return (
+                description.includes(
+                  value
+                ) ||
+                category.includes(
+                  value
+                )
+              );
+
+            }
+          );
+
+
+        if (expense) {
+
+          showPage(
+            "expenses"
+          );
+
+          openExpenseDetails(
+            expense.id
+          );
+
+          return;
+
+        }
+
+
+        /*
+         * REQUISITION SEARCH
+         */
+
+        const req =
+          requisitions.find(
+            item =>
+              String(
+                item.req_no ||
+                ""
+              )
+                .toLowerCase()
+                .includes(value) ||
+              String(
+                item.item_description ||
+                ""
+              )
+                .toLowerCase()
+                .includes(value)
+          );
+
+
+        if (req) {
+
+          showPage(
+            "requisitions"
+          );
+
+          openRequisitionDetails(
+            req.id
+          );
+
+          return;
+
+        }
+
+
+        /*
+         * PETTY CASH SEARCH
+         */
+
+        const cash =
+          petty.find(
+            item =>
+              String(
+                item.description ||
+                ""
+              )
+                .toLowerCase()
+                .includes(value) ||
+              String(
+                item.paid_to ||
+                ""
+              )
+                .toLowerCase()
+                .includes(value)
+          );
+
+
+        if (cash) {
+
+          showPage(
+            "petty"
+          );
+
+          openPettyDetails(
+            cash.id
+          );
+
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+   ========================================================= */
+
+document
+  .querySelectorAll(
+    ".quick .qa"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const page =
+          button.dataset.page;
+
+
+        if (!page) {
+          return;
+        }
+
+
+        showPage(page);
+
+
+        const text =
+          button.textContent
+            .toLowerCase();
+
+
+        if (
+          page === "vehicles" &&
+          text.includes("add")
+        ) {
+
+          openVehicleModal();
+
+        }
+
+
+        if (
+          page === "expenses" &&
+          text.includes("expense")
+        ) {
+
+          if (vehicles.length) {
+
+            window.addVehicleExpense(
+              vehicles[0].id
+            );
+
+          } else {
+
+            toast(
+              "Add a vehicle first."
+            );
+
+          }
+
+        }
+
+
+        if (
+          page === "requisitions"
+        ) {
+
+          const button =
+            document.querySelector(
+              "#requisitions .page-heading button"
+            );
+
+          if (button) {
+
+            button.click();
+
+          }
+
+        }
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
+
+document
+  .querySelectorAll(
+    ".summary[data-page]"
+  )
+  .forEach(card => {
+
+    card.addEventListener(
+      "click",
+      () => {
+
+        showPage(
+          card.dataset.page
         );
 
       }
@@ -2300,13 +3721,11 @@ document
 
 
 /* =========================================================
-   CLICK OUTSIDE MODAL TO CLOSE
+   CLOSE NORMAL MODALS
    ========================================================= */
 
 document
-  .querySelectorAll(
-    ".modal"
-  )
+  .querySelectorAll(".modal")
   .forEach(modal => {
 
     modal.addEventListener(
@@ -2331,151 +3750,263 @@ document
 
 
 /* =========================================================
-   GLOBAL SEARCH
+   DYNAMIC DETAILS MODAL
    ========================================================= */
 
-if ($("globalSearch")) {
+function createDetailsModal() {
 
-  $("globalSearch")
-    .addEventListener(
-      "input",
-      event => {
-
-        const value =
-          event.target.value
-            .trim()
-            .toLowerCase();
+  if ($("recordDetailsModal")) {
+    return;
+  }
 
 
-        if (!value) {
-          return;
-        }
+  const modal =
+    document.createElement(
+      "div"
+    );
 
 
-        showPage(
-          "vehicles"
-        );
+  modal.id =
+    "recordDetailsModal";
 
 
-        if ($("search")) {
+  modal.className =
+    "modal";
 
-          $("search").value =
-            value;
 
-          renderVehicles();
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.55);
+    padding:18px;
+    overflow:auto;
+  `;
 
-        }
+
+  modal.innerHTML = `
+    <div
+      class="card"
+      style="
+        width:min(680px,100%);
+        max-height:90vh;
+        overflow:auto;
+        background:white;
+        border-radius:18px;
+        padding:22px;
+      "
+    ></div>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  modal.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        modal ||
+        event.target.closest(
+          "[data-detail-close]"
+        )
+      ) {
+
+        closeDetailsModal();
 
       }
+
+    }
+  );
+
+}
+
+
+function showDetailsModal(
+  html
+) {
+
+  createDetailsModal();
+
+
+  const modal =
+    $("recordDetailsModal");
+
+
+  const card =
+    modal.querySelector(
+      ".card"
     );
+
+
+  card.innerHTML =
+    html;
+
+
+  modal.style.display =
+    "flex";
+
+}
+
+
+function closeDetailsModal() {
+
+  const modal =
+    $("recordDetailsModal");
+
+  if (modal) {
+
+    modal.style.display =
+      "none";
+
+  }
 
 }
 
 
 /* =========================================================
-   DASHBOARD QUICK ACTIONS
+   OPEN RECORD
    ========================================================= */
 
-document
-  .querySelectorAll(
-    ".quick .qa"
-  )
-  .forEach(button => {
+function openRecord(
+  type,
+  id
+) {
 
-    button.addEventListener(
-      "click",
-      () => {
+  if (type === "expense") {
 
-        const page =
-          button.dataset.page;
+    openExpenseDetails(id);
 
-        if (!page) {
-          return;
-        }
+    return;
+  }
 
 
-        showPage(page);
+  if (type === "requisition") {
+
+    openRequisitionDetails(id);
+
+    return;
+  }
 
 
-        if (
-          page === "vehicles" &&
-          button.textContent
-            .toLowerCase()
-            .includes("add")
-        ) {
+  if (type === "petty") {
 
-          openVehicleModal();
+    openPettyDetails(id);
 
-        }
+    return;
+  }
 
 
-        if (
-          page === "expenses" &&
-          button.textContent
-            .toLowerCase()
-            .includes("expense")
-        ) {
+  if (type === "vehicle") {
 
-          if (
-            vehicles.length
-          ) {
+    openVehicleDetails(id);
 
-            window.addVehicleExpense(
-              vehicles[0].id
-            );
+  }
 
-          } else {
-
-            toast(
-              "Please add a vehicle first."
-            );
-
-          }
-
-        }
-
-      }
-    );
-
-  });
+}
 
 
 /* =========================================================
-   DASHBOARD SUMMARY CARDS
+   SEARCH RESULT CLICK SUPPORT
    ========================================================= */
 
-document
-  .querySelectorAll(
-    ".summary[data-page]"
-  )
-  .forEach(card => {
+document.addEventListener(
+  "click",
+  event => {
 
-    card.addEventListener(
-      "click",
-      () => {
+    const expense =
+      event.target.closest(
+        "[data-expense-id]"
+      );
 
-        showPage(
-          card.dataset.page
-        );
 
-      }
-    );
+    if (
+      expense &&
+      expense.closest(
+        "#expenseTable"
+      )
+    ) {
 
-  });
+      openExpenseDetails(
+        expense.dataset.expenseId
+      );
+
+    }
+
+
+    const pettyRow =
+      event.target.closest(
+        "[data-petty-id]"
+      );
+
+
+    if (pettyRow) {
+
+      openPettyDetails(
+        pettyRow.dataset.pettyId
+      );
+
+    }
+
+
+    const reqRow =
+      event.target.closest(
+        "[data-req-id]"
+      );
+
+
+    if (reqRow) {
+
+      openRequisitionDetails(
+        reqRow.dataset.reqId
+      );
+
+    }
+
+
+    const searchedExpense =
+      event.target.closest(
+        "[data-expense-id]"
+      );
+
+
+    if (
+      searchedExpense &&
+      searchedExpense.closest(
+        "#list"
+      )
+    ) {
+
+      openExpenseDetails(
+        searchedExpense.dataset.expenseId
+      );
+
+    }
+
+  }
+);
 
 
 /* =========================================================
-   STARTUP
+   INITIALIZE
    ========================================================= */
 
 updateDate();
 
+createDetailsModal();
 
 console.log(
-  "Garage Operations Pro started."
+  "Garage Operations Pro loaded."
 );
 
 console.log(
-  "Supabase:",
+  "Connected to:",
   SUPABASE_URL
 );
