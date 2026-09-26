@@ -3136,4 +3136,1233 @@ function openRequisitionDetails(id) {
 
       <button
         class="x"
-       
+        data-detail-close
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div style="
+      display:grid;
+      gap:14px;
+    ">
+
+      <div>
+        <span class="detail-label">
+          Requested by
+        </span>
+
+        <strong>
+          ${esc(
+            item.requested_by ||
+            ""
+          )}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Date
+        </span>
+
+        <strong>
+          ${esc(
+            item.req_date ||
+            ""
+          )}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Item / Material
+        </span>
+
+        <strong>
+          ${esc(
+            item.item_description ||
+            ""
+          )}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Quantity
+        </span>
+
+        <strong>
+          ${esc(
+            item.quantity || 0
+          )}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Unit cost
+        </span>
+
+        <strong>
+          ${money(item.unit_cost)}
+        </strong>
+      </div>
+
+
+      <div>
+        <span class="detail-label">
+          Total
+        </span>
+
+        <strong style="font-size:18px">
+          ${money(item.total_amount)}
+        </strong>
+      </div>
+
+
+      ${
+        vehicle
+          ? `
+            <div>
+
+              <span class="detail-label">
+                Vehicle
+              </span>
+
+              <strong
+                data-req-vehicle="${esc(vehicle.id)}"
+                style="cursor:pointer"
+              >
+                ${esc(
+                  vehicle.registration
+                )}
+              </strong>
+
+            </div>
+          `
+          : ""
+      }
+
+
+      <div>
+
+        <span class="detail-label">
+          Current Status
+        </span>
+
+        ${statusBadge(item.status)}
+
+      </div>
+
+
+      <hr>
+
+
+      <div>
+
+        <label
+          style="
+            display:block;
+            margin-bottom:7px;
+            font-weight:600;
+          "
+        >
+          Update Requisition Status
+        </label>
+
+        <select
+          id="reqStatusSelect"
+          class="status-select"
+        >
+
+          <option
+            value="Pending"
+            ${item.status === "Pending" ? "selected" : ""}
+          >
+            Pending
+          </option>
+
+          <option
+            value="Approved"
+            ${item.status === "Approved" ? "selected" : ""}
+          >
+            Approved
+          </option>
+
+          <option
+            value="Rejected"
+            ${item.status === "Rejected" ? "selected" : ""}
+          >
+            Rejected
+          </option>
+
+          <option
+            value="Paid"
+            ${item.status === "Paid" ? "selected" : ""}
+          >
+            Paid
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="actions">
+
+        <button
+          id="saveReqStatus"
+          data-req-status-id="${esc(item.id)}"
+        >
+          Update Status
+        </button>
+
+      </div>
+
+
+      <div>
+
+        <span class="detail-label">
+          Notes
+        </span>
+
+        <p>
+          ${esc(
+            item.notes ||
+            "No notes"
+          )}
+        </p>
+
+      </div>
+
+    </div>
+  `);
+
+
+  const modal =
+    $("recordDetailsModal");
+
+  if (!modal)
+    return;
+
+
+  /* Vehicle link */
+
+  const vehicleLink =
+    modal.querySelector(
+      "[data-req-vehicle]"
+    );
+
+
+  if (vehicleLink) {
+
+    vehicleLink.addEventListener(
+      "click",
+      () => {
+
+        closeDetailsModal();
+
+        openVehicleDetails(
+          vehicle.id
+        );
+
+      }
+    );
+
+  }
+
+
+  /* APPROVAL / STATUS BUTTON */
+
+  const saveStatus =
+    modal.querySelector(
+      "#saveReqStatus"
+    );
+
+
+  if (saveStatus) {
+
+    saveStatus.addEventListener(
+      "click",
+      async () => {
+
+        const select =
+          modal.querySelector(
+            "#reqStatusSelect"
+          );
+
+
+        const newStatus =
+          select.value;
+
+
+        saveStatus.disabled =
+          true;
+
+        saveStatus.textContent =
+          "Updating...";
+
+
+        const result =
+          await sb
+            .from("requisitions")
+            .update({
+              status: newStatus
+            })
+            .eq(
+              "id",
+              item.id
+            );
+
+
+        if (result.error) {
+
+          console.error(
+            "Requisition status:",
+            result.error
+          );
+
+          saveStatus.disabled =
+            false;
+
+          saveStatus.textContent =
+            "Update Status";
+
+          toast(
+            result.error.message
+          );
+
+          return;
+
+        }
+
+
+        /* Update local data immediately */
+
+        item.status =
+          newStatus;
+
+
+        /* Refresh everything */
+
+        await loadData();
+
+
+        closeDetailsModal();
+
+
+        toast(
+          `Requisition ${item.req_no || ""} marked ${newStatus}.`
+        );
+
+
+        /* If still on requisitions page,
+           refresh it immediately. */
+
+        showPage(
+          "requisitions"
+        );
+
+      }
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   NEW REQUISITION
+   ========================================================= */
+
+document
+  .querySelectorAll(
+    "#requisitions .page-heading button"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      async () => {
+
+        const nextNumber =
+          requisitions.length + 1;
+
+
+        const reqNo =
+          prompt(
+            "Requisition number:",
+            "REQ-" +
+            String(nextNumber)
+              .padStart(3, "0")
+          );
+
+
+        if (!reqNo)
+          return;
+
+
+        const description =
+          prompt(
+            "Item / material required:"
+          );
+
+
+        if (!description)
+          return;
+
+
+        const quantity =
+          Number(
+            prompt(
+              "Quantity:",
+              "1"
+            ) || 0
+          );
+
+
+        const unitCost =
+          Number(
+            prompt(
+              "Unit cost:",
+              "0"
+            ) || 0
+          );
+
+
+        if (
+          quantity <= 0 ||
+          unitCost < 0
+        ) {
+
+          toast(
+            "Enter valid values."
+          );
+
+          return;
+
+        }
+
+
+        /*
+         * Optional vehicle linking.
+         * Leave blank if not related
+         * to a particular vehicle.
+         */
+
+        const vehicleReg =
+          prompt(
+            "Vehicle registration (optional):"
+          ) || "";
+
+
+        let vehicleId =
+          null;
+
+
+        if (vehicleReg.trim()) {
+
+          const foundVehicle =
+            vehicles.find(
+              vehicle =>
+                String(
+                  vehicle.registration ||
+                  ""
+                )
+                  .toLowerCase() ===
+                vehicleReg
+                  .trim()
+                  .toLowerCase()
+            );
+
+
+          if (foundVehicle) {
+
+            vehicleId =
+              foundVehicle.id;
+
+          }
+
+        }
+
+
+        const result =
+          await sb
+            .from("requisitions")
+            .insert({
+
+              req_no:
+                reqNo.trim(),
+
+              req_date:
+                todayISO(),
+
+              requested_by:
+                currentUser,
+
+              vehicle_id:
+                vehicleId,
+
+              item_description:
+                description,
+
+              quantity,
+
+              unit_cost:
+                unitCost,
+
+              total_amount:
+                quantity *
+                unitCost,
+
+              status:
+                "Pending",
+
+              notes:
+                ""
+
+            });
+
+
+        if (result.error) {
+
+          console.error(
+            "Requisition:",
+            result.error
+          );
+
+          toast(
+            result.error.message
+          );
+
+          return;
+
+        }
+
+
+        await loadData();
+
+
+        toast(
+          "Requisition created as Pending."
+        );
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   GLOBAL SEARCH
+   ========================================================= */
+
+if ($("globalSearch")) {
+
+  $("globalSearch")
+    .addEventListener(
+      "input",
+      event => {
+
+        const value =
+          event.target.value
+            .trim()
+            .toLowerCase();
+
+
+        if (!value) {
+          return;
+        }
+
+
+        /*
+         * 1. VEHICLES
+         *
+         * This is important for searches
+         * like KBN.
+         */
+
+        const vehicleMatches =
+          vehicles.filter(
+            item => {
+
+              const reg =
+                String(
+                  item.registration ||
+                  ""
+                ).toLowerCase();
+
+              const customer =
+                String(
+                  item.customer ||
+                  ""
+                ).toLowerCase();
+
+              return (
+                reg.includes(value) ||
+                customer.includes(value)
+              );
+
+            }
+          );
+
+
+        if (vehicleMatches.length) {
+
+          showPage("vehicles");
+
+
+          if ($("search")) {
+
+            $("search").value =
+              value;
+
+          }
+
+
+          renderVehicles();
+
+
+          /*
+           * Open first matching vehicle
+           * so its expenses are visible.
+           */
+
+          if (vehicleMatches[0]) {
+
+            openVehicleDetails(
+              vehicleMatches[0].id
+            );
+
+          }
+
+          return;
+
+        }
+
+
+        /*
+         * 2. EXPENSES
+         *
+         * Also search vehicle registration.
+         */
+
+        const expenseMatch =
+          expenses.find(
+            item => {
+
+              const vehicle =
+                vehicles.find(
+                  v =>
+                    String(v.id) ===
+                    String(item.vehicle_id)
+                );
+
+
+              const text = [
+
+                item.description,
+
+                item.category,
+
+                item.expense_date,
+
+                vehicle?.registration,
+
+                vehicle?.customer
+
+              ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+
+              return text.includes(value);
+
+            }
+          );
+
+
+        if (expenseMatch) {
+
+          showPage("expenses");
+
+          openExpenseDetails(
+            expenseMatch.id
+          );
+
+          return;
+
+        }
+
+
+        /*
+         * 3. PETTY CASH
+         */
+
+        const cashMatch =
+          petty.find(
+            item => {
+
+              const text = [
+
+                item.description,
+
+                item.paid_to,
+
+                item.category,
+
+                item.cash_date,
+
+                item.notes
+
+              ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+
+              return text.includes(value);
+
+            }
+          );
+
+
+        if (cashMatch) {
+
+          showPage("petty");
+
+          openPettyDetails(
+            cashMatch.id
+          );
+
+          return;
+
+        }
+
+
+        /*
+         * 4. REQUISITIONS
+         */
+
+        const reqMatch =
+          requisitions.find(
+            item => {
+
+              const vehicle =
+                vehicles.find(
+                  v =>
+                    String(v.id) ===
+                    String(item.vehicle_id)
+                );
+
+
+              const text = [
+
+                item.req_no,
+
+                item.item_description,
+
+                item.requested_by,
+
+                item.status,
+
+                item.req_date,
+
+                vehicle?.registration
+
+              ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+
+              return text.includes(value);
+
+            }
+          );
+
+
+        if (reqMatch) {
+
+          showPage("requisitions");
+
+          openRequisitionDetails(
+            reqMatch.id
+          );
+
+          return;
+
+        }
+
+
+        toast(
+          `No results for "${event.target.value}".`
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+   ========================================================= */
+
+document
+  .querySelectorAll(
+    ".quick .qa"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const page =
+          button.dataset.page;
+
+
+        if (!page)
+          return;
+
+
+        showPage(page);
+
+
+        const text =
+          button.textContent
+            .toLowerCase();
+
+
+        if (
+          page === "vehicles" &&
+          text.includes("add")
+        ) {
+
+          openVehicleModal();
+
+        }
+
+
+        if (
+          page === "expenses" &&
+          text.includes("expense")
+        ) {
+
+          if (vehicles.length) {
+
+            window.addVehicleExpense(
+              vehicles[0].id
+            );
+
+          } else {
+
+            toast(
+              "Add a vehicle first."
+            );
+
+          }
+
+        }
+
+
+        if (
+          page === "requisitions"
+        ) {
+
+          const reqButton =
+            document.querySelector(
+              "#requisitions .page-heading button"
+            );
+
+
+          if (reqButton)
+            reqButton.click();
+
+        }
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
+
+document
+  .querySelectorAll(
+    ".summary[data-page]"
+  )
+  .forEach(card => {
+
+    card.addEventListener(
+      "click",
+      () => {
+
+        showPage(
+          card.dataset.page
+        );
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   REPORT CARDS
+   ========================================================= */
+
+function makeReportCardsClickable() {
+
+  const cards =
+    document.querySelectorAll(
+      "#reports .finance-cards > div"
+    );
+
+
+  const pages = [
+    "expenses",
+    "vehicles",
+    "petty",
+    "requisitions"
+  ];
+
+
+  cards.forEach(
+    (card, index) => {
+
+      if (!pages[index])
+        return;
+
+
+      card.style.cursor =
+        "pointer";
+
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          showPage(
+            pages[index]
+          );
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+makeReportCardsClickable();
+
+
+/* =========================================================
+   EXPENSE PAGE CARDS
+   ========================================================= */
+
+function makeExpenseCardsClickable() {
+
+  document
+    .querySelectorAll(
+      "#expenses .finance-cards > div"
+    )
+    .forEach(card => {
+
+      card.style.cursor =
+        "pointer";
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          showPage(
+            "expenses"
+          );
+
+        }
+      );
+
+    });
+
+}
+
+
+makeExpenseCardsClickable();
+
+
+/* =========================================================
+   MODAL CLOSE BUTTONS
+   ========================================================= */
+
+document
+  .querySelectorAll(
+    "[data-close]"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const modal =
+          $(button.dataset.close);
+
+
+        if (modal) {
+
+          modal
+            .classList
+            .add("hidden");
+
+        }
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   NORMAL MODALS
+   ========================================================= */
+
+document
+  .querySelectorAll(".modal")
+  .forEach(modal => {
+
+    modal.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target ===
+          modal
+        ) {
+
+          modal
+            .classList
+            .add("hidden");
+
+        }
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   DYNAMIC DETAILS MODAL
+   ========================================================= */
+
+function createDetailsModal() {
+
+  if ($("recordDetailsModal"))
+    return;
+
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "recordDetailsModal";
+
+
+  modal.className =
+    "modal";
+
+
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.55);
+    padding:18px;
+    overflow:auto;
+  `;
+
+
+  modal.innerHTML = `
+    <div
+      class="card"
+      style="
+        width:min(680px,100%);
+        max-height:90vh;
+        overflow:auto;
+        background:white;
+        border-radius:18px;
+        padding:22px;
+      "
+    ></div>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  modal.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target === modal ||
+        event.target.closest(
+          "[data-detail-close]"
+        )
+      ) {
+
+        closeDetailsModal();
+
+      }
+
+    }
+  );
+
+}
+
+
+function showDetailsModal(html) {
+
+  createDetailsModal();
+
+
+  const modal =
+    $("recordDetailsModal");
+
+
+  const card =
+    modal.querySelector(
+      ".card"
+    );
+
+
+  card.innerHTML =
+    html;
+
+
+  modal.style.display =
+    "flex";
+
+}
+
+
+function closeDetailsModal() {
+
+  const modal =
+    $("recordDetailsModal");
+
+
+  if (modal) {
+
+    modal.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   OPEN RECORD
+   ========================================================= */
+
+function openRecord(
+  type,
+  id
+) {
+
+  if (type === "expense") {
+
+    openExpenseDetails(id);
+    return;
+
+  }
+
+
+  if (type === "requisition") {
+
+    openRequisitionDetails(id);
+    return;
+
+  }
+
+
+  if (type === "petty") {
+
+    openPettyDetails(id);
+    return;
+
+  }
+
+
+  if (type === "vehicle") {
+
+    openVehicleDetails(id);
+
+  }
+
+}
+
+
+/* =========================================================
+   ESCAPE KEY
+   ========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key ===
+      "Escape"
+    ) {
+
+      closeDetailsModal();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+applyDashboardPolish();
+
+updateDate();
+
+createDetailsModal();
+
+
+console.log(
+  "Garage Operations Pro loaded."
+);
+
+console.log(
+  "Connected to:",
+  SUPABASE_URL
+);
